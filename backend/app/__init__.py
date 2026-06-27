@@ -1,0 +1,1 @@
+"""Sales MIS FastAPI application."""
