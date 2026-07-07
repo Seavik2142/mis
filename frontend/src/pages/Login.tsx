@@ -4,20 +4,47 @@ import {
   ShoppingCart,
   UsersRound
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { loginUser } from "../services/authService";
+import { getDashboardSummary } from "../services/analyticsService";
+import type { DashboardSummary } from "../types";
 import BrandLogo from "../components/common/BrandLogo";
+
+const money = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+  maximumFractionDigits: 0
+});
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [summary, setSummary] = useState<DashboardSummary | null>(null);
 
   const navigate = useNavigate();
   const { login } = useAuth();
+
+  useEffect(() => {
+    let isMounted = true;
+    async function loadStats() {
+      try {
+        const stats = await getDashboardSummary();
+        if (isMounted) {
+          setSummary(stats);
+        }
+      } catch (e) {
+        console.error("Failed to load public dashboard stats:", e);
+      }
+    }
+    loadStats();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,8 +72,7 @@ function Login() {
                 <BrandLogo />
               </span>
               <div>
-                <p className="brand-title">Sales MIS</p>
-                <p className="brand-subtitle">Operations Console</p>
+                <p className="brand-title">MIS Of Me</p>
               </div>
             </div>
 
@@ -59,17 +85,17 @@ function Login() {
           <div className="mini-grid">
             <div className="mini-metric">
               <CircleDollarSign aria-hidden="true" size={18} strokeWidth={2.2} />
-              <strong>$50k</strong>
+              <strong>{summary ? money.format(summary.revenue) : "$0"}</strong>
               <span>Revenue</span>
             </div>
             <div className="mini-metric">
               <ShoppingCart aria-hidden="true" size={18} strokeWidth={2.2} />
-              <strong>420</strong>
+              <strong>{summary ? summary.orders : 0}</strong>
               <span>Orders</span>
             </div>
             <div className="mini-metric">
               <UsersRound aria-hidden="true" size={18} strokeWidth={2.2} />
-              <strong>250</strong>
+              <strong>{summary ? summary.customers : 0}</strong>
               <span>Customers</span>
             </div>
           </div>
@@ -79,7 +105,7 @@ function Login() {
           <div>
             <p className="eyebrow">Welcome back</p>
             <h2>Log in</h2>
-            <p>Sign in with your Sales MIS account.</p>
+            <p>Sign in with your MIS Of Me account.</p>
           </div>
 
           <div className="field">

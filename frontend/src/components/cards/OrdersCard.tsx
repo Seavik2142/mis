@@ -2,9 +2,10 @@ import { PackageCheck } from "lucide-react";
 
 interface OrdersCardProps {
   totalOrders: number;
+  pendingCount: number;
 }
 
-function OrdersCard({ totalOrders }: OrdersCardProps) {
+function OrdersCard({ totalOrders, pendingCount }: OrdersCardProps) {
   return (
     <article className="stat-card" style={{ "--stat-tone": "#2563eb" } as React.CSSProperties}>
       <div className="stat-head">
@@ -15,7 +16,7 @@ function OrdersCard({ totalOrders }: OrdersCardProps) {
       </div>
       <p className="stat-value">{totalOrders}</p>
       <p className="stat-detail">
-        <span className="trend">38</span> waiting fulfillment
+        <span className="trend">{pendingCount}</span> waiting fulfillment
       </p>
     </article>
   );

@@ -36,8 +36,7 @@ function Sidebar() {
           <BrandLogo />
         </span>
         <div>
-          <p className="brand-title">Sales MIS</p>
-          <p className="brand-subtitle">Operations Console</p>
+          <p className="brand-title">MIS Of Me</p>
         </div>
       </div>
 
@@ -56,10 +55,7 @@ function Sidebar() {
         ))}
       </nav>
 
-      <div className="sidebar-footer">
-        <BarChart3 aria-hidden="true" size={18} strokeWidth={2.2} />
-        <p>Today: revenue tracking, stock watch, and order flow stay in view.</p>
-      </div>
+
     </aside>
   );
 }

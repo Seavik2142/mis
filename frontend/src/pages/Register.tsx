@@ -6,10 +6,18 @@ import {
   ShoppingCart,
   UsersRound
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { registerUser } from "../services/authService";
+import { getDashboardSummary } from "../services/analyticsService";
+import type { DashboardSummary } from "../types";
 import BrandLogo from "../components/common/BrandLogo";
+
+const money = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+  maximumFractionDigits: 0
+});
 
 function Register() {
   const [email, setEmail] = useState("");
@@ -18,6 +26,25 @@ function Register() {
   const [fullName, setFullName] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [summary, setSummary] = useState<DashboardSummary | null>(null);
+
+  useEffect(() => {
+    let isMounted = true;
+    async function loadStats() {
+      try {
+        const stats = await getDashboardSummary();
+        if (isMounted) {
+          setSummary(stats);
+        }
+      } catch (e) {
+        console.error("Failed to load public dashboard stats:", e);
+      }
+    }
+    loadStats();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
   
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -83,8 +110,7 @@ function Register() {
                 <BrandLogo />
               </span>
               <div>
-                <p className="brand-title">Sales MIS</p>
-                <p className="brand-subtitle">Operations Console</p>
+                <p className="brand-title">MIS Of Me</p>
               </div>
             </div>
 
@@ -97,17 +123,17 @@ function Register() {
           <div className="mini-grid">
             <div className="mini-metric">
               <CircleDollarSign aria-hidden="true" size={18} strokeWidth={2.2} />
-              <strong>$50k</strong>
+              <strong>{summary ? money.format(summary.revenue) : "$0"}</strong>
               <span>Revenue</span>
             </div>
             <div className="mini-metric">
               <ShoppingCart aria-hidden="true" size={18} strokeWidth={2.2} />
-              <strong>420</strong>
+              <strong>{summary ? summary.orders : 0}</strong>
               <span>Orders</span>
             </div>
             <div className="mini-metric">
               <UsersRound aria-hidden="true" size={18} strokeWidth={2.2} />
-              <strong>250</strong>
+              <strong>{summary ? summary.customers : 0}</strong>
               <span>Customers</span>
             </div>
           </div>

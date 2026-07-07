@@ -22,4 +22,11 @@ class Customer(TimestampMixin, Base):
     phone: Mapped[str | None] = mapped_column(String(40), nullable=True)
     segment: Mapped[str] = mapped_column(String(40), default="Active")
 
+    # Midterm exam fields
+    address: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    city: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    client_type: Mapped[str] = mapped_column(String(40), default="Normal")
+    discount: Mapped[float] = mapped_column(default=0.0)
+
     orders: Mapped[list["Order"]] = relationship(back_populates="customer")
+

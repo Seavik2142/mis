@@ -1,5 +1,5 @@
-import { AlertTriangle, Bell, Clock, LogOut, Moon, Package, Sun } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { Bell, Clock, LogOut, Moon, Package, Sun, X } from "lucide-react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import { getLowStockProducts } from "../../services/inventoryService";
@@ -32,6 +32,24 @@ function Navbar() {
 
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [dismissedIds, setDismissedIds] = useState<string[]>(() => {
+    try {
+      return JSON.parse(localStorage.getItem("dismissed_notifications") || "[]");
+    } catch {
+      return [];
+    }
+  });
+
+  const dismissNotification = (e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
+    const updated = [...dismissedIds, id];
+    setDismissedIds(updated);
+    localStorage.setItem("dismissed_notifications", JSON.stringify(updated));
+  };
+
+  const activeNotifications = useMemo(() => {
+    return notifications.filter((item) => !dismissedIds.includes(item.id));
+  }, [notifications, dismissedIds]);
   const [theme, setTheme] = useState<"dark" | "light">(() => {
     const saved = localStorage.getItem("theme");
     if (saved === "light" || saved === "dark") return saved;
@@ -51,7 +69,7 @@ function Navbar() {
     setTheme((prev) => (prev === "light" ? "dark" : "light"));
   };
 
-  const title = titles[location.pathname] || "Sales MIS";
+  const title = titles[location.pathname] || "MIS Of Me";
   const initial = user?.email?.charAt(0)?.toUpperCase() || "A";
 
   async function fetchNotifications() {
@@ -159,8 +177,8 @@ function Navbar() {
             onClick={() => setShowDropdown(!showDropdown)}
           >
             <Bell aria-hidden="true" size={18} strokeWidth={2.2} />
-            {notifications.length > 0 && (
-              <span className="notification-badge">{notifications.length}</span>
+            {activeNotifications.length > 0 && (
+              <span className="notification-badge">{activeNotifications.length}</span>
             )}
           </button>
 
@@ -168,17 +186,17 @@ function Navbar() {
             <div className="notification-dropdown">
               <div className="notification-header">
                 <h3>Notifications</h3>
-                {notifications.length > 0 && (
-                  <span className="status danger compact">{notifications.length} Alert{notifications.length > 1 ? "s" : ""}</span>
+                {activeNotifications.length > 0 && (
+                  <span className="status danger compact">{activeNotifications.length} Alert{activeNotifications.length > 1 ? "s" : ""}</span>
                 )}
               </div>
               <div className="notification-list">
-                {notifications.length === 0 ? (
+                {activeNotifications.length === 0 ? (
                   <div className="notification-empty">
                     No urgent notifications. System is running cleanly!
                   </div>
                 ) : (
-                  notifications.map((item) => (
+                  activeNotifications.map((item) => (
                     <div
                       key={item.id}
                       className="notification-item"
@@ -191,10 +209,18 @@ function Navbar() {
                           <Clock size={16} strokeWidth={2.5} />
                         )}
                       </div>
-                      <div className="notification-info">
+                      <div className="notification-info" style={{ flex: 1 }}>
                         <p className="notification-title">{item.title}</p>
                         <p className="notification-desc">{item.description}</p>
                       </div>
+                      <button
+                        className="notification-dismiss-btn"
+                        type="button"
+                        aria-label="Dismiss Notification"
+                        onClick={(e) => dismissNotification(e, item.id)}
+                      >
+                        <X size={14} strokeWidth={2.5} />
+                      </button>
                     </div>
                   ))
                 )}

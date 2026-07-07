@@ -16,6 +16,41 @@ function Settings() {
   const [success, setSuccess] = useState("");
   const [isSaving, setIsSaving] = useState(false);
 
+  // Notification toggles state and persistence
+  const [lowStockAlerts, setLowStockAlerts] = useState(() => {
+    const val = localStorage.getItem("setting_low_stock_alerts");
+    return val !== null ? val === "true" : true;
+  });
+
+  const [dailyDigest, setDailyDigest] = useState(() => {
+    const val = localStorage.getItem("setting_daily_digest");
+    return val !== null ? val === "true" : true;
+  });
+
+  const [delayedAlerts, setDelayedAlerts] = useState(() => {
+    const val = localStorage.getItem("setting_delayed_alerts");
+    return val !== null ? val === "true" : false;
+  });
+
+  const handleToggleLowStock = () => {
+    const val = !lowStockAlerts;
+    setLowStockAlerts(val);
+    localStorage.setItem("setting_low_stock_alerts", String(val));
+  };
+
+  const handleToggleDailyDigest = () => {
+    const val = !dailyDigest;
+    setDailyDigest(val);
+    localStorage.setItem("setting_daily_digest", String(val));
+  };
+
+  const handleToggleDelayedAlerts = () => {
+    const val = !delayedAlerts;
+    setDelayedAlerts(val);
+    localStorage.setItem("setting_delayed_alerts", String(val));
+  };
+
+
   // Secure Password strength validator
   const validatePassword = (pass: string): string | null => {
     if (pass.length < 8) {
@@ -101,7 +136,7 @@ function Settings() {
           <div className="form-grid">
             <div className="field">
               <label htmlFor="businessName">Business name</label>
-              <input id="businessName" defaultValue="Sales MIS" />
+              <input id="businessName" defaultValue="MIS Of Me" />
             </div>
             <div className="field">
               <label htmlFor="currency">Currency</label>
@@ -274,21 +309,45 @@ function Settings() {
                 <strong>Low stock alerts</strong>
                 <p>Notify managers when products cross reorder level.</p>
               </div>
-              <span className="toggle on" role="switch" aria-checked="true"><span /></span>
+              <span
+                className={`toggle ${lowStockAlerts ? "on" : ""}`}
+                role="switch"
+                aria-checked={lowStockAlerts}
+                onClick={handleToggleLowStock}
+                style={{ cursor: "pointer" }}
+              >
+                <span />
+              </span>
             </div>
             <div className="settings-row">
               <div>
                 <strong>Daily sales digest</strong>
                 <p>Send a compact sales summary after close of business.</p>
               </div>
-              <span className="toggle on" role="switch" aria-checked="true"><span /></span>
+              <span
+                className={`toggle ${dailyDigest ? "on" : ""}`}
+                role="switch"
+                aria-checked={dailyDigest}
+                onClick={handleToggleDailyDigest}
+                style={{ cursor: "pointer" }}
+              >
+                <span />
+              </span>
             </div>
             <div className="settings-row">
               <div>
                 <strong>Delayed order alerts</strong>
                 <p>Flag orders that miss fulfillment targets.</p>
               </div>
-              <span className="toggle" role="switch" aria-checked="false"><span /></span>
+              <span
+                className={`toggle ${delayedAlerts ? "on" : ""}`}
+                role="switch"
+                aria-checked={delayedAlerts}
+                onClick={handleToggleDelayedAlerts}
+                style={{ cursor: "pointer" }}
+              >
+                <span />
+              </span>
             </div>
           </div>
         </section>

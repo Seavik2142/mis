@@ -34,6 +34,12 @@ class Product(TimestampMixin, Base):
     reorder_level: Mapped[int] = mapped_column(Integer, default=15)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
 
+    # Midterm exam fields
+    product_type: Mapped[str] = mapped_column(String(100), default="Accessory")
+    unit_measure: Mapped[str] = mapped_column(String(40), default="Piece")
+    cost_price: Mapped[Decimal] = mapped_column(Numeric(12, 2), default=Decimal("0.00"))
+
+
     order_items: Mapped[list["OrderItem"]] = relationship(back_populates="product")
     inventory_movements: Mapped[list["InventoryMovement"]] = relationship(
         back_populates="product"

@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sales MIS - Interactive Schema Explorer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #090d16;
+      --bg-card: rgba(17, 24, 39, 0.65);
+      --border-glow: rgba(99, 102, 241, 0.15);
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --primary: #6366f1;
+      --primary-hover: #4f46e5;
+      --accent-cyan: #06b6d4;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: radial-gradient(circle at top left, #111827 0%, var(--bg-dark) 100%);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* Scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--primary);
+    }
+
+    header {
+      backdrop-filter: blur(16px);
+      background: rgba(9, 13, 22, 0.5);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      padding: 1.25rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .logo-container h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      background: linear-gradient(135deg, #fff 0%, var(--text-muted) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .logo-container p {
+      font-size: 0.8rem;
+      color: var(--accent-cyan);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-top: 0.15rem;
+    }
+
+    .actions-bar {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .btn {
+      font-family: inherit;
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 0.6rem 1.2rem;
+      border-radius: 0.75rem;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--text-main);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+      border-color: transparent;
+      box-shadow: 0 4px 12px var(--border-glow);
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-hover);
+      box-shadow: 0 6px 16px rgba(99, 102, 241, 0.3);
+      transform: translateY(-1px);
+    }
+
+    main {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 3fr 2fr;
+      padding: 2rem;
+      gap: 2rem;
+      max-height: calc(100vh - 80px);
+    }
+
+    @media (max-width: 1024px) {
+      main {
+        grid-template-columns: 1fr;
+        max-height: none;
+      }
+    }
+
+    /* Diagram Section */
+    .diagram-panel {
+      background: var(--bg-card);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.3);
+      position: relative;
+    }
+
+    .panel-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .panel-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    .view-container {
+      flex: 1;
+      overflow: auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      background-color: rgba(9, 13, 22, 0.4);
+    }
+
+    /* Table details metadata column */
+    .info-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      overflow-y: auto;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 1.25rem;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .search-input {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 0.75rem 1rem;
+      border-radius: 0.75rem;
+      color: #fff;
+      font-family: inherit;
+      font-size: 0.9rem;
+      transition: all 0.25s;
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px var(--border-glow);
+    }
+
+    .table-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .table-item {
+      padding: 1rem;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      border-radius: 0.75rem;
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+
+    .table-item:hover {
+      background: rgba(99, 102, 241, 0.06);
+      border-color: rgba(99, 102, 241, 0.25);
+    }
+
+    .table-item.active {
+      background: rgba(99, 102, 241, 0.1);
+      border-color: var(--primary);
+    }
+
+    .table-item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.25rem;
+    }
+
+    .table-item-name {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .table-item-desc {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .badge {
+      font-size: 0.7rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: 0.25rem;
+      font-weight: 700;
+      background: rgba(6, 182, 212, 0.15);
+      color: var(--accent-cyan);
+    }
+
+    /* Modal or overlay for code syntax */
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(8px);
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      padding: 2rem;
+    }
+
+    .modal-content {
+      background: #0f172a;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 1.25rem;
+      width: 100%;
+      max-width: 700px;
+      display: flex;
+      flex-direction: column;
+      max-height: 80vh;
+      overflow: hidden;
+    }
+
+    .modal-header {
+      padding: 1.5rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-body {
+      padding: 1.5rem;
+      overflow-y: auto;
+      font-family: monospace;
+      font-size: 0.85rem;
+      background: #090d16;
+      color: #94a3b8;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo-container">
+      <h1>Sales MIS</h1>
+      <p>Oracle Database Schema Explorer</p>
+    </div>
+    <div class="actions-bar">
+      <button class="btn btn-secondary" onclick="toggleModal(true)">View Mermaid Syntax</button>
+      <button class="btn btn-primary" onclick="copyMermaidCode()">Copy Diagram Code</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- Left panel showing diagram -->
+    <div class="diagram-panel">
+      <div class="panel-header">
+        <span class="panel-title">Interactive Entity-Relationship Diagram</span>
+        <span class="badge">Oracle Dialect</span>
+      </div>
+      <div class="view-container">
+        <pre class="mermaid" id="erd">
+erDiagram
+    users {
+        NUMBER_10 id PK
+        VARCHAR2_255 email UK
+        VARCHAR2_120 full_name
+        VARCHAR2_255 hashed_password
+        NUMBER_1 is_active
+        NUMBER_1 is_admin
+        TIMESTAMP_TZ created_at
+        TIMESTAMP_TZ updated_at
+    }
+    products {
+        NUMBER_10 id PK
+        VARCHAR2_30 product_code UK
+        VARCHAR2_80 sku UK
+        VARCHAR2_160 name
+        VARCHAR2_100 category
+        NUMBER_12_2 price
+        NUMBER_10 stock
+        NUMBER_10 reorder_level
+        NUMBER_1 is_active
+        TIMESTAMP_TZ created_at
+        TIMESTAMP_TZ updated_at
+    }
+    customers {
+        NUMBER_10 id PK
+        VARCHAR2_30 customer_code UK
+        VARCHAR2_120 name
+        VARCHAR2_160 company
+        VARCHAR2_255 email UK
+        VARCHAR2_40 phone
+        VARCHAR2_40 segment
+        TIMESTAMP_TZ created_at
+        TIMESTAMP_TZ updated_at
+    }
+    orders {
+        NUMBER_10 id PK
+        VARCHAR2_40 order_number UK
+        NUMBER_10 customer_id FK
+        VARCHAR2_60 channel
+        VARCHAR2_30 status
+        TIMESTAMP_TZ ordered_at
+        NUMBER_14_2 total
+        TIMESTAMP_TZ created_at
+        TIMESTAMP_TZ updated_at
+    }
+    order_items {
+        NUMBER_10 id PK
+        NUMBER_10 order_id FK
+        NUMBER_10 product_id FK
+        NUMBER_10 quantity
+        NUMBER_12_2 unit_price
+        NUMBER_14_2 line_total
+    }
+    inventory_movements {
+        NUMBER_10 id PK
+        NUMBER_10 product_id FK
+        VARCHAR2_30 movement_type
+        NUMBER_10 quantity
+        VARCHAR2_255 note
+        NUMBER_10 created_by FK
+        TIMESTAMP_TZ created_at
+    }
+
+    customers ||--o{ orders : "places"
+    orders ||--|{ order_items : "contains"
+    products ||--o{ order_items : "ordered-in"
+    products ||--o{ inventory_movements : "tracked-by"
+    users ||--o{ inventory_movements : "authorizes"
+        </pre>
+      </div>
+    </div>
+
+    <!-- Right panel for quick table exploration -->
+    <div class="info-panel">
+      <div class="card">
+        <h3 style="font-family:'Outfit'; font-weight:600; margin-bottom: 0.5rem;">Table Explorer</h3>
+        <input type="text" class="search-input" id="search" placeholder="Search tables..." oninput="filterTables()">
+        <div class="table-list" id="tableList">
+          <div class="table-item" onclick="highlightTable('users')">
+            <div class="table-item-header">
+              <span class="table-item-name">users</span>
+              <span class="badge">Identity</span>
+            </div>
+            <p class="table-item-desc">User accounts, roles (is_admin), and hashed credentials.</p>
+          </div>
+          <div class="table-item" onclick="highlightTable('products')">
+            <div class="table-item-header">
+              <span class="table-item-name">products</span>
+              <span class="badge">Catalog</span>
+            </div>
+            <p class="table-item-desc">Item master list, prices, SKUs, and inventory stock balances.</p>
+          </div>
+          <div class="table-item" onclick="highlightTable('customers')">
+            <div class="table-item-header">
+              <span class="table-item-name">customers</span>
+              <span class="badge">Profiles</span>
+            </div>
+            <p class="table-item-desc">Purchaser details, companies, and segments (VIP, Active).</p>
+          </div>
+          <div class="table-item" onclick="highlightTable('orders')">
+            <div class="table-item-header">
+              <span class="table-item-name">orders</span>
+              <span class="badge">Sales</span>
+            </div>
+            <p class="table-item-desc">Header sales transactions, totals, and shipment statuses.</p>
+          </div>
+          <div class="table-item" onclick="highlightTable('order_items')">
+            <div class="table-item-header">
+              <span class="table-item-name">order_items</span>
+              <span class="badge">Sales Line</span>
+            </div>
+            <p class="table-item-desc">Quantities and prices bought per product in an order.</p>
+          </div>
+          <div class="table-item" onclick="highlightTable('inventory_movements')">
+            <div class="table-item-header">
+              <span class="table-item-name">inventory_movements</span>
+              <span class="badge">Audit Ledger</span>
+            </div>
+            <p class="table-item-desc">Chronological changes to product inventory with audit notes.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Modal for copying / viewing raw syntax -->
+  <div class="modal" id="syntaxModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 style="font-family:'Outfit';">Mermaid.js Diagram Syntax</h3>
+        <button class="btn btn-secondary" onclick="toggleModal(false)">Close</button>
+      </div>
+      <div class="modal-body" id="codeContent"></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'dark',
+      themeVariables: {
+        background: '#090d16',
+        primaryColor: '#111827',
+        primaryTextColor: '#f3f4f6',
+        primaryBorderColor: '#6366f1',
+        lineColor: '#06b6d4',
+        secondaryColor: '#1f2937',
+        tertiaryColor: '#1f2937'
+      }
+    });
+
+    const rawMermaid = `erDiagram
+    users {
+        NUMBER_10 id PK
+        VARCHAR2_255 email UK
+        VARCHAR2_120 full_name
+        VARCHAR2_255 hashed_password
+        NUMBER_1 is_active
+        NUMBER_1 is_admin
+        TIMESTAMP_TZ created_at
+        TIMESTAMP_TZ updated_at
+    }
+    products {
+        NUMBER_10 id PK
+        VARCHAR2_30 product_code UK
+        VARCHAR2_80 sku UK
+        VARCHAR2_160 name
+        VARCHAR2_100 category
+        NUMBER_12_2 price
+        NUMBER_10 stock
+        NUMBER_10 reorder_level
+        NUMBER_1 is_active
+        TIMESTAMP_TZ created_at
+        TIMESTAMP_TZ updated_at
+    }
+    customers {
+        NUMBER_10 id PK
+        VARCHAR2_30 customer_code UK
+        VARCHAR2_120 name
+        VARCHAR2_160 company
+        VARCHAR2_255 email UK
+        VARCHAR2_40 phone
+        VARCHAR2_40 segment
+        TIMESTAMP_TZ created_at
+        TIMESTAMP_TZ updated_at
+    }
+    orders {
+        NUMBER_10 id PK
+        VARCHAR2_40 order_number UK
+        NUMBER_10 customer_id FK
+        VARCHAR2_60 channel
+        VARCHAR2_30 status
+        TIMESTAMP_TZ ordered_at
+        NUMBER_14_2 total
+        TIMESTAMP_TZ created_at
+        TIMESTAMP_TZ updated_at
+    }
+    order_items {
+        NUMBER_10 id PK
+        NUMBER_10 order_id FK
+        NUMBER_10 product_id FK
+        NUMBER_10 quantity
+        NUMBER_12_2 unit_price
+        NUMBER_14_2 line_total
+    }
+    inventory_movements {
+        NUMBER_10 id PK
+        NUMBER_10 product_id FK
+        VARCHAR2_30 movement_type
+        NUMBER_10 quantity
+        VARCHAR2_255 note
+        NUMBER_10 created_by FK
+        TIMESTAMP_TZ created_at
+    }
+
+    customers ||--o{ orders : "places"
+    orders ||--|{ order_items : "contains"
+    products ||--o{ order_items : "ordered-in"
+    products ||--o{ inventory_movements : "tracked-by"
+    users ||--o{ inventory_movements : "authorizes"`;
+
+    document.getElementById('codeContent').textContent = rawMermaid;
+
+    function toggleModal(show) {
+      document.getElementById('syntaxModal').style.display = show ? 'flex' : 'none';
+    }
+
+    function copyMermaidCode() {
+      navigator.clipboard.writeText(rawMermaid);
+      alert('Diagram code copied to clipboard!');
+    }
+
+    function filterTables() {
+      const q = document.getElementById('search').value.toLowerCase();
+      const items = document.querySelectorAll('.table-item');
+      items.forEach(item => {
+        const name = item.querySelector('.table-item-name').textContent.toLowerCase();
+        if (name.includes(q)) {
+          item.style.display = 'block';
+        } else {
+          item.style.display = 'none';
+        }
+      });
+    }
+
+    function highlightTable(tableName) {
+      // Remove active class from all explorer items
+      document.querySelectorAll('.table-item').forEach(item => {
+        item.classList.remove('active');
+        if (item.querySelector('.table-item-name').textContent === tableName) {
+          item.classList.add('active');
+        }
+      });
+
+      // Find the Mermaid SVG element to highlight
+      const elements = document.querySelectorAll('.node');
+      elements.forEach(el => {
+        if (el.id.includes(tableName)) {
+          el.style.outline = "2px solid #6366f1";
+          el.style.outlineOffset = "4px";
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } else {
+          el.style.outline = "none";
+        }
+      });
+    }
+  </script>
+</body>
+</html>

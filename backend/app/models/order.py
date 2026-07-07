@@ -11,6 +11,7 @@ from app.database.db import Base, TimestampMixin
 if TYPE_CHECKING:
     from app.models.customer import Customer
     from app.models.product import Product
+    from app.models.employee import Employee
 
 
 class Order(TimestampMixin, Base):
@@ -33,11 +34,22 @@ class Order(TimestampMixin, Base):
     )
     total: Mapped[Decimal] = mapped_column(Numeric(14, 2), default=0)
 
+    # Midterm exam fields
+    employee_id: Mapped[int | None] = mapped_column(
+        ForeignKey("employees.id", ondelete="SET NULL"),
+        nullable=True,
+        index=True,
+    )
+    delivery_type: Mapped[str | None] = mapped_column(String(20), default="F")
+    delivery_date: Mapped[str | None] = mapped_column(String(30), nullable=True)
+
     customer: Mapped["Customer"] = relationship(back_populates="orders")
+    employee: Mapped["Employee | None"] = relationship(back_populates="orders")
     items: Mapped[list["OrderItem"]] = relationship(
         back_populates="order",
         cascade="all, delete-orphan",
     )
+
 
 
 class OrderItem(Base):

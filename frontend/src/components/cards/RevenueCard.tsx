@@ -2,9 +2,10 @@ import { CircleDollarSign } from "lucide-react";
 
 interface RevenueCardProps {
   revenue: number;
+  fulfilledCount: number;
 }
 
-function RevenueCard({ revenue }: RevenueCardProps) {
+function RevenueCard({ revenue, fulfilledCount }: RevenueCardProps) {
   const formattedRevenue = new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
@@ -21,7 +22,7 @@ function RevenueCard({ revenue }: RevenueCardProps) {
       </div>
       <p className="stat-value">{formattedRevenue}</p>
       <p className="stat-detail">
-        <span className="trend">+12.8%</span> from last month
+        <span className="trend">{fulfilledCount}</span> orders completed
       </p>
     </article>
   );

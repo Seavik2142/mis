@@ -118,6 +118,10 @@ function Dashboard() {
   const pendingOrders = orders.filter((order) => (
     order.status === "Pending" || order.status === "Packed"
   ));
+  const fulfilledCount = useMemo(() => orders.filter((order) => (
+    order.status === "Fulfilled" || order.status === "Completed"
+  )).length, [orders]);
+
 
   return (
     <Layout>
@@ -161,9 +165,9 @@ function Dashboard() {
         {isLoading && <p className="notice">Loading live dashboard data...</p>}
 
         <div className="kpi-grid">
-          <RevenueCard revenue={summary?.revenue || 0} />
+          <RevenueCard revenue={summary?.revenue || 0} fulfilledCount={fulfilledCount} />
 
-          <OrdersCard totalOrders={summary?.orders || 0} />
+          <OrdersCard totalOrders={summary?.orders || 0} pendingCount={pendingOrders.length} />
 
           <StatsCard
             title="Customers"
