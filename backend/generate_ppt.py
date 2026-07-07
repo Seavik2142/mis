@@ -5,6 +5,7 @@ from pptx.util import Inches, Pt
 from pptx.dml.color import RGBColor
 from pptx.enum.text import PP_ALIGN
 from pptx.enum.shapes import MSO_SHAPE
+from pptx.oxml import parse_xml
 
 def copy_template_shapes(source_slide, target_slide):
     # Copy background bars, university name, professor name, triangles, and logo picture.
@@ -38,6 +39,14 @@ def add_content_slide(prs, source_slide, title_text):
     p.font.bold = True
     p.font.color.rgb = RGBColor(15, 23, 42)
     
+    # Apply smooth slow fade transition
+    transition_xml = (
+        '<p:transition xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main" spd="slow">'
+        '  <p:fade/>'
+        '</p:transition>'
+    )
+    slide.element.append(parse_xml(transition_xml))
+    
     return slide
 
 def build_appended_presentation():
@@ -58,6 +67,17 @@ def build_appended_presentation():
         del prs.slides._sldIdLst[1]
     
     cover_slide = prs.slides[0]
+    
+    # Apply smooth slow fade transition to cover slide as well
+    transition_xml = (
+        '<p:transition xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main" spd="slow">'
+        '  <p:fade/>'
+        '</p:transition>'
+    )
+    existing_trans = cover_slide.element.find('{http://schemas.openxmlformats.org/presentationml/2006/main}transition')
+    if existing_trans is not None:
+        cover_slide.element.remove(existing_trans)
+    cover_slide.element.append(parse_xml(transition_xml))
     
     # Text fonts
     BODY_FONT = "Kh Battambang"
