@@ -38,7 +38,7 @@ def add_content_slide(prs, source_slide, title_text):
     return slide
 
 def build_appended_presentation():
-    input_path = "/Users/ahzarjy/word doct/MIS.pptx"
+    input_path = "/Users/ahzarjy/word doct/MIS1.pptx"
     if not os.path.exists(input_path):
         print(f"Error: file not found at {input_path}")
         return
@@ -119,7 +119,7 @@ def build_appended_presentation():
     
     points = [
         ("១. ការរក្សាទុកទិន្នន័យពិតប្រាកដ (Data Persistence)",
-         "รាល់ប្រវត្តិនៃការលក់ ស្តុកទំនិញ និងគណនីអ្នកប្រើប្រាស់ ត្រូវតែរក្សាទុកជាអចិន្ត្រៃយ៍ ទោះបីជាប្រព័ន្ធបិទ ឬគាំងកុំព្យូទ័រក៏ដោយ។"),
+         "រាល់ប្រវត្តិនៃការលក់ ស្តុកទំនិញ និងគណនីអ្នកប្រើប្រាស់ ត្រូវតែរក្សាទុកជាអចិន្ត្រៃយ៍ ទោះបីជាប្រព័ន្ធបិទ ឬគាំងកុំព្យូទ័រក៏ដោយ។"),
         ("២. ភាពត្រឹមត្រូវ និងសុវត្ថិភាពទិន្នន័យ (Data Integrity & Security)",
          "Database ការពារទិន្នន័យកុំឱ្យស្ទួន ធានាទំនាក់ទំនងរវាងតារាងផ្សេងៗ (Foreign Keys) និងការពារការចូលប្រើប្រាស់ដោយគ្មានការអនុញ្ញាត។"),
         ("៣. ជាប្រភពសម្រាប់ការវិភាគព័ត៌មាន (Business Intelligence)",
@@ -200,7 +200,7 @@ def build_appended_presentation():
     p_f_d1.font.name = BODY_FONT
     p_f_d1.font.size = Pt(12.5)
     p_f_d1.space_after = Pt(10)
-
+    
     p_f2 = tf5.add_paragraph()
     p_f2.text = "• បទពិសោធន៍អ្នកប្រើប្រាស់ (User Experience - UX)"
     p_f2.font.name = BODY_FONT
@@ -211,7 +211,7 @@ def build_appended_presentation():
     p_f_d2.font.name = BODY_FONT
     p_f_d2.font.size = Pt(12.5)
     p_f_d2.space_after = Pt(10)
-
+    
     p_f3 = tf5.add_paragraph()
     p_f3.text = "• ការប្រមូលទិន្នន័យបញ្ចូលដំបូង (Input Collection)"
     p_f3.font.name = BODY_FONT
@@ -232,17 +232,18 @@ def build_appended_presentation():
     tf6.word_wrap = True
     
     p_sch = tf6.paragraphs[0]
-    p_sch.text = "តារាងសំខាន់ៗទាំង ៦ នៅក្នុងប្រព័ន្ធ Sales MIS Database៖"
+    p_sch.text = "តារាងសំខាន់ៗទាំង ៧ នៅក្នុងប្រព័ន្ធ Database (MIS Of Me)៖"
     p_sch.font.name = BODY_FONT
     p_sch.font.size = Pt(14)
     p_sch.font.bold = True
-    p_sch.space_after = Pt(10)
+    p_sch.space_after = Pt(8)
     
     sch_items = [
         ("• users", "រក្សាទុកគណនីបុគ្គលិក អ៊ីមែល លេខសម្ងាត់ និងសិទ្ធិគ្រប់គ្រង (Admin / User)។"),
-        ("• customers", "ប្រមូលព័ត៌មានទំនាក់ទំនងរបស់ក្រុមហ៊ុន ឬអតិថិជន និងក្រុមចំណាត់ថ្នាក់ (VIP, Active, Wholesale)។"),
-        ("• products", "បញ្ជីទំនិញ កូដ (SKU) តម្លៃលក់ ចំនួនស្តុកសរុប និងកម្រិតស្តុកកំណត់ត្រូវបញ្ជាទិញបន្ថែម (Reorder Level)។"),
-        ("• orders", "កត់ត្រាលេខវិក្កយបត្រ កាលបរិច្ឆេទលក់ ស្ថានភាពបញ្ជាទិញ (Pending, Completed, Delayed) និងតម្លៃសរុប។"),
+        ("• customers", "ប្រមូលព័ត៌មានទំនាក់ទំនងរបស់អតិថិជន (ឈ្មោះ អ៊ីមែល លេខទូរស័ព្ទ អាសយដ្ឋាន ទីក្រុង ប្រភេទអតិថិជន និងភាគរយបញ្ចុះតម្លៃ)។"),
+        ("• employees", "រក្សាទុកព័ត៌មានបុគ្គលិក (ឈ្មោះ មុខតំណែង និងប្រាក់ខែ) សម្រាប់គ្រប់គ្រងការលក់ និងកត់ត្រាប្រតិបត្តិការ។"),
+        ("• products", "បញ្ជីទំនិញ (កូដ SKU ឈ្មោះ តម្លៃលក់ ចំនួនស្តុក ប្រភេទផលិតផល ឯកតារង្វាស់ និងថ្លៃដើមផលិតផល)។"),
+        ("• orders", "កត់ត្រាលេខវិក្កយបត្រ បុគ្គលិកទទួលបន្ទុក ស្ថានភាព និងព័ត៌មានដឹកជញ្ជូន (Delivery Type & Date)។"),
         ("• order_items", "ផ្ទុកព័ត៌មានលម្អិតនៃទំនិញលក់ចេញក្នុងវិក្កយបត្រនីមួយៗ (ចំនួនលក់ តម្លៃឯកតា និងតម្លៃសរុបជួរ)។"),
         ("• inventory_movements", "ប្រវត្តិនៃការបម្រែបម្រួលស្តុកទាំងអស់សម្រាប់ធ្វើសវនកម្ម (Audit Log) ដូចជាការលក់ចេញ ឬការបន្ថែមស្តុកដំបូង។")
     ]
@@ -251,8 +252,8 @@ def build_appended_presentation():
         p_item = tf6.add_paragraph()
         p_item.text = f"{item_title}: {item_desc}"
         p_item.font.name = BODY_FONT
-        p_item.font.size = Pt(12)
-        p_item.space_after = Pt(4)
+        p_item.font.size = Pt(11.5)
+        p_item.space_after = Pt(3)
 
     # -------------------------------------------------------------
     # SLIDE 7: Database Workflow Step-by-Step
@@ -272,7 +273,7 @@ def build_appended_presentation():
     
     steps = [
         ("ជំហានទី ១: បង្កើតប្រតិបត្តិការលក់ (Create Order)",
-         "បង្កើតជួរទិន្នន័យថ្មីមួយក្នុងតារាង `orders` ភ្ជាប់ទៅ `customers.id` និងកំណត់ស្ថានភាព 'Pending'។"),
+         "បង្កើតជួរទិន្នន័យថ្មីមួយក្នុងតារាង `orders` ភ្ជាប់ទៅ `customers.id`, `employees.id` និងកំណត់ស្ថានភាព 'Pending'។"),
         ("ជំហានទី ២: បញ្ចូលបញ្ជីទំនិញលម្អិត (Insert Line Items)",
          "រាល់ទំនិញដែលបានទិញ ត្រូវបញ្ចូលទៅក្នុងតារាង `order_items` ភ្ជាប់ទៅកាន់ `orders.id` និង `products.id` នីមួយៗ។"),
         ("ជំហានទី ៣: ធ្វើបច្ចុប្បន្នភាពកម្រិតស្តុក (Update Product Stock)",
@@ -296,12 +297,12 @@ def build_appended_presentation():
         p_sd.space_after = Pt(8)
 
     # -------------------------------------------------------------
-    # SLIDE 8: Entity-Relationship Diagram (ER Diagram) - NEW
+    # SLIDE 8: Entity-Relationship Diagram (ER Diagram)
     # -------------------------------------------------------------
     slide8 = add_content_slide(prs, cover_slide, "ឌីយ៉ាក្រាមទំនាក់ទំនងទិន្នន័យ (Entity-Relationship Diagram)")
     
     # 1. users table shape
-    box_users = slide8.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(1.2), Inches(2.2), Inches(2.2), Inches(1.5))
+    box_users = slide8.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(1.2), Inches(2.1), Inches(2.2), Inches(1.2))
     box_users.fill.solid()
     box_users.fill.fore_color.rgb = WHITE
     box_users.line.color.rgb = LINE_COLOR
@@ -314,16 +315,38 @@ def build_appended_presentation():
     p.font.size = Pt(11)
     p.font.color.rgb = DARK_BLUE
     p.alignment = PP_ALIGN.CENTER
-    p.space_after = Pt(4)
-    for field in ["id (PK)", "email", "full_name", "is_admin"]:
+    p.space_after = Pt(2)
+    for field in ["id (PK)", "email", "full_name", "role"]:
         p_f = tf_u.add_paragraph()
         p_f.text = field
         p_f.font.name = BODY_FONT
-        p_f.font.size = Pt(9.5)
+        p_f.font.size = Pt(9)
         p_f.font.color.rgb = GRAY_TEXT
 
-    # 2. customers table shape
-    box_cust = slide8.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(1.2), Inches(4.3), Inches(2.2), Inches(1.5))
+    # 2. employees table shape
+    box_emp = slide8.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(1.2), Inches(3.5), Inches(2.2), Inches(1.2))
+    box_emp.fill.solid()
+    box_emp.fill.fore_color.rgb = WHITE
+    box_emp.line.color.rgb = LINE_COLOR
+    tf_emp = box_emp.text_frame
+    tf_emp.word_wrap = True
+    p = tf_emp.paragraphs[0]
+    p.text = "employees"
+    p.font.name = TITLE_FONT
+    p.font.bold = True
+    p.font.size = Pt(11)
+    p.font.color.rgb = DARK_BLUE
+    p.alignment = PP_ALIGN.CENTER
+    p.space_after = Pt(2)
+    for field in ["id (PK)", "first_name", "last_name", "title", "salary"]:
+        p_f = tf_emp.add_paragraph()
+        p_f.text = field
+        p_f.font.name = BODY_FONT
+        p_f.font.size = Pt(9)
+        p_f.font.color.rgb = GRAY_TEXT
+
+    # 3. customers table shape
+    box_cust = slide8.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(1.2), Inches(4.9), Inches(2.2), Inches(1.2))
     box_cust.fill.solid()
     box_cust.fill.fore_color.rgb = WHITE
     box_cust.line.color.rgb = LINE_COLOR
@@ -336,16 +359,16 @@ def build_appended_presentation():
     p.font.size = Pt(11)
     p.font.color.rgb = DARK_BLUE
     p.alignment = PP_ALIGN.CENTER
-    p.space_after = Pt(4)
-    for field in ["id (PK)", "customer_code", "name", "email", "segment"]:
+    p.space_after = Pt(2)
+    for field in ["id (PK)", "name", "email", "client_type", "discount"]:
         p_f = tf_c.add_paragraph()
         p_f.text = field
         p_f.font.name = BODY_FONT
-        p_f.font.size = Pt(9.5)
+        p_f.font.size = Pt(9)
         p_f.font.color.rgb = GRAY_TEXT
 
-    # 3. inventory_movements table shape (Middle Top)
-    box_inv = slide8.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(4.8), Inches(2.2), Inches(2.7), Inches(1.5))
+    # 4. inventory_movements table shape (Middle Top)
+    box_inv = slide8.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(4.8), Inches(2.1), Inches(2.7), Inches(1.5))
     box_inv.fill.solid()
     box_inv.fill.fore_color.rgb = WHITE
     box_inv.line.color.rgb = LINE_COLOR
@@ -359,15 +382,15 @@ def build_appended_presentation():
     p.font.color.rgb = DARK_BLUE
     p.alignment = PP_ALIGN.CENTER
     p.space_after = Pt(4)
-    for field in ["id (PK)", "product_id (FK)", "movement_type", "quantity", "created_by (FK)"]:
+    for field in ["id (PK)", "product_id (FK)", "movement_type", "quantity", "note", "created_by (FK)"]:
         p_f = tf_i.add_paragraph()
         p_f.text = field
         p_f.font.name = BODY_FONT
-        p_f.font.size = Pt(9.5)
+        p_f.font.size = Pt(9)
         p_f.font.color.rgb = GRAY_TEXT
 
-    # 4. orders table shape (Middle Bottom)
-    box_ord = slide8.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(4.8), Inches(4.3), Inches(2.7), Inches(1.5))
+    # 5. orders table shape (Middle Bottom)
+    box_ord = slide8.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(4.8), Inches(4.3), Inches(2.7), Inches(1.8))
     box_ord.fill.solid()
     box_ord.fill.fore_color.rgb = WHITE
     box_ord.line.color.rgb = LINE_COLOR
@@ -381,15 +404,15 @@ def build_appended_presentation():
     p.font.color.rgb = DARK_BLUE
     p.alignment = PP_ALIGN.CENTER
     p.space_after = Pt(4)
-    for field in ["id (PK)", "order_number", "customer_id (FK)", "total", "ordered_at"]:
+    for field in ["id (PK)", "order_number", "customer_id (FK)", "employee_id (FK)", "channel", "status", "delivery_type", "total"]:
         p_f = tf_o.add_paragraph()
         p_f.text = field
         p_f.font.name = BODY_FONT
-        p_f.font.size = Pt(9.5)
+        p_f.font.size = Pt(9)
         p_f.font.color.rgb = GRAY_TEXT
 
-    # 5. products table shape (Right Top)
-    box_prod = slide8.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(8.9), Inches(2.2), Inches(2.2), Inches(1.5))
+    # 6. products table shape (Right Top)
+    box_prod = slide8.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(8.9), Inches(2.1), Inches(2.2), Inches(1.5))
     box_prod.fill.solid()
     box_prod.fill.fore_color.rgb = WHITE
     box_prod.line.color.rgb = LINE_COLOR
@@ -403,14 +426,14 @@ def build_appended_presentation():
     p.font.color.rgb = DARK_BLUE
     p.alignment = PP_ALIGN.CENTER
     p.space_after = Pt(4)
-    for field in ["id (PK)", "product_code", "sku", "name", "price", "stock"]:
+    for field in ["id (PK)", "name", "sku", "price", "stock", "reorder_level", "cost_price"]:
         p_f = tf_p.add_paragraph()
         p_f.text = field
         p_f.font.name = BODY_FONT
-        p_f.font.size = Pt(9.5)
+        p_f.font.size = Pt(9)
         p_f.font.color.rgb = GRAY_TEXT
 
-    # 6. order_items table shape (Right Bottom)
+    # 7. order_items table shape (Right Bottom)
     box_items = slide8.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(8.9), Inches(4.3), Inches(2.2), Inches(1.5))
     box_items.fill.solid()
     box_items.fill.fore_color.rgb = WHITE
@@ -425,82 +448,170 @@ def build_appended_presentation():
     p.font.color.rgb = DARK_BLUE
     p.alignment = PP_ALIGN.CENTER
     p.space_after = Pt(4)
-    for field in ["id (PK)", "order_id (FK)", "product_id (FK)", "quantity", "unit_price"]:
+    for field in ["id (PK)", "order_id (FK)", "product_id (FK)", "quantity", "unit_price", "line_total"]:
         p_f = tf_it.add_paragraph()
         p_f.text = field
         p_f.font.name = BODY_FONT
-        p_f.font.size = Pt(9.5)
+        p_f.font.size = Pt(9)
         p_f.font.color.rgb = GRAY_TEXT
 
     # Drawing connector lines between tables
     # 1. users -> inventory_movements (Horiz)
-    line1 = slide8.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(3.4), Inches(2.95), Inches(1.4), Inches(0.02))
+    line1 = slide8.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(3.4), Inches(2.7), Inches(1.4), Inches(0.02))
     line1.fill.solid()
     line1.fill.fore_color.rgb = LINE_COLOR
     line1.line.fill.background()
 
-    # 2. customers -> orders (Horiz)
-    line2 = slide8.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(3.4), Inches(5.05), Inches(1.4), Inches(0.02))
+    # 2. employees -> orders (Horiz)
+    line2 = slide8.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(3.4), Inches(4.1), Inches(1.4), Inches(0.02))
     line2.fill.solid()
     line2.fill.fore_color.rgb = LINE_COLOR
     line2.line.fill.background()
 
-    # 3. products -> inventory_movements (Horiz)
-    line3 = slide8.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(7.5), Inches(2.95), Inches(1.4), Inches(0.02))
+    # 3. customers -> orders (Horiz)
+    line3 = slide8.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(3.4), Inches(5.5), Inches(1.4), Inches(0.02))
     line3.fill.solid()
     line3.fill.fore_color.rgb = LINE_COLOR
     line3.line.fill.background()
 
-    # 4. products -> order_items (Vert)
-    line4 = slide8.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(10.0), Inches(3.7), Inches(0.02), Inches(0.6))
+    # 4. products -> inventory_movements (Horiz)
+    line4 = slide8.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(7.5), Inches(2.85), Inches(1.4), Inches(0.02))
     line4.fill.solid()
     line4.fill.fore_color.rgb = LINE_COLOR
     line4.line.fill.background()
 
-    # 5. orders -> order_items (Horiz)
-    line5 = slide8.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(7.5), Inches(5.05), Inches(1.4), Inches(0.02))
+    # 5. products -> order_items (Vert)
+    line5 = slide8.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(10.0), Inches(3.6), Inches(0.02), Inches(0.7))
     line5.fill.solid()
     line5.fill.fore_color.rgb = LINE_COLOR
     line5.line.fill.background()
 
+    # 6. orders -> order_items (Horiz)
+    line6 = slide8.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(7.5), Inches(5.05), Inches(1.4), Inches(0.02))
+    line6.fill.solid()
+    line6.fill.fore_color.rgb = LINE_COLOR
+    line6.line.fill.background()
+
     # Note text box for explanations
-    note_box = slide8.shapes.add_textbox(Inches(1.2), Inches(6.0), Inches(9.9), Inches(0.5))
+    note_box = slide8.shapes.add_textbox(Inches(1.2), Inches(6.1), Inches(9.9), Inches(0.5))
     note_tf = note_box.text_frame
     note_tf.word_wrap = True
     note_p = note_tf.paragraphs[0]
-    note_p.text = "ទំនាក់ទំនងរវាងតារាង (Relationships)៖\n• PK: Primary Key (សោចម្បង) | FK: Foreign Key (សោក្រៅដែលភ្ជាប់ទំនាក់ទំនងរវាងតារាងមួយទៅតារាងមួយទៀត)"
+    note_p.text = "ទំនាក់ទំនងរវាងតារាង (Relationships)៖\n• PK: Primary Key (សោចម្បង) | FK: Foreign Key (សោក្រៅដែលភ្ជាប់ទំនាក់ទំនងរវាងតារាង)"
     note_p.font.name = BODY_FONT
-    note_p.font.size = Pt(11)
+    note_p.font.size = Pt(10.5)
     note_p.font.color.rgb = GRAY_TEXT
 
     # -------------------------------------------------------------
-    # SLIDE 9: Conclusion
+    # SLIDE 9: Oracle Database Migration (NEW)
     # -------------------------------------------------------------
-    slide9 = add_content_slide(prs, cover_slide, "សន្និដ្ឋានរួម (Conclusion)")
+    slide9 = add_content_slide(prs, cover_slide, "ស្ថាបត្យកម្មផ្ទេរទិន្នន័យទៅកាន់ Oracle (Oracle Migration)")
     
     content_box9 = slide9.shapes.add_textbox(Inches(0.96), Inches(2.1), Inches(11.4), Inches(4.3))
     tf9 = content_box9.text_frame
     tf9.word_wrap = True
     
-    p_c1 = tf9.paragraphs[0]
-    p_c1.text = "• Database (មូលដ្ឋានទិន្នន័យ) គឺជា គ្រឹះស្ថាន (Foundation) ដ៏រឹងមាំ ដែលរក្សាទុកព័ត៌មាននិងទ្រព្យសម្បត្តិស្នូល។"
+    p_mig = tf9.paragraphs[0]
+    p_mig.text = "ហេតុអ្វីជ្រើសរើស Oracle Database និងរបៀបនៃការផ្ទេរទិន្នន័យ៖"
+    p_mig.font.name = BODY_FONT
+    p_mig.font.size = Pt(14)
+    p_mig.font.bold = True
+    p_mig.space_after = Pt(12)
+    
+    mig_points = [
+        ("• ហេតុអ្វីជ្រើសរើស Oracle Database?",
+         "ផ្តល់នូវស្ថេរភាពទិន្នន័យខ្ពស់ សុវត្ថិភាពកម្រិត Enterprise លទ្ធភាពពង្រីកប្រព័ន្ធធំៗ (High Scalability) និង PL/SQL stored procedures។"),
+        ("• ស្វ័យប្រវត្តកម្ម DDL & Data Type Mapping (export_to_oracle.py)៖",
+         "បម្លែងប្រភេទនិន្នន័យពី SQLite/PostgreSQL ទៅជា Oracle DDL (ឧទាហរណ៍៖ INTEGER ទៅ NUMBER, VARCHAR ទៅ VARCHAR2, DATETIME ទៅ TIMESTAMP)។"),
+        ("• ដំណើរការផ្ទេរទិន្នន័យ (Migration Pipeline)៖",
+         "ត្រួតពិនិត្យ និងទាញយកទិន្នន័យចេញពី SQLite រួចបម្លែងទៅជាសំណួរ INSERT INTO ក្នុងឯកសារ SQL script តែមួយសម្រាប់ដំឡើងនៅលើម៉ាស៊ីន Oracle។"),
+        ("• structural Integrity & Constraint Handling៖",
+         "រក្សានូវរចនាសម្ព័ន្ធទំនាក់ទំនង សោចម្បង (Primary Keys) សោក្រៅ (Foreign Keys) និង constraints ទាំងអស់បានយ៉ាងត្រឹមត្រូវ។")
+    ]
+    
+    for title, desc in mig_points:
+        p_t = tf9.add_paragraph()
+        p_t.text = title
+        p_t.font.name = BODY_FONT
+        p_t.font.size = Pt(13)
+        p_t.font.bold = True
+        p_t.font.color.rgb = DARK_BLUE
+        
+        p_d = tf9.add_paragraph()
+        p_d.text = f"  - {desc}"
+        p_d.font.name = BODY_FONT
+        p_d.font.size = Pt(12)
+        p_d.space_after = Pt(10)
+
+    # -------------------------------------------------------------
+    # SLIDE 10: SQL Views in Oracle (NEW)
+    # -------------------------------------------------------------
+    slide10 = add_content_slide(prs, cover_slide, "ការបង្កើត SQL Views សម្រាប់របាយការណ៍វិភាគ")
+    
+    content_box10 = slide10.shapes.add_textbox(Inches(0.96), Inches(2.1), Inches(11.4), Inches(4.3))
+    tf10 = content_box10.text_frame
+    tf10.word_wrap = True
+    
+    p_v = tf10.paragraphs[0]
+    p_v.text = "សារៈសំខាន់នៃការប្រើប្រាស់ SQL Views សម្រួលដល់របាយការណ៍អាជីវកម្ម៖"
+    p_v.font.name = BODY_FONT
+    p_v.font.size = Pt(14)
+    p_v.font.bold = True
+    p_v.space_after = Pt(12)
+    
+    view_points = [
+        ("• សម្រួលការសរសេរ Query និងបង្កើនល្បឿន (Query Optimization)៖",
+         "ជួយកាត់បន្ថយការ Join ច្រើនតារាងស្មុគស្មាញ និងពន្លឿនការទាញយកព័ត៌មានមកបង្ហាញលើ Dashboard។"),
+        ("• View ១: NumberClientOrdered (ស្ថិតិនៃការបញ្ជាទិញរបស់អតិថិជន)៖",
+         "រាប់ចំនួនដងដែលអតិថិជនម្នាក់ៗបានបញ្ជាទិញទំនិញ ដើម្បីវាយតម្លៃកម្រិតស្មោះត្រង់ (Customer Loyalty & Engagement)។"),
+        ("• View ២: TotalSaleAmount (ចំណូលសរុបពីការលក់)៖",
+         "គណនាប្រាក់ចំណូលសរុប (Revenue) ដែលទទួលបានពីការលក់ទំនិញទាំងអស់ក្នុងប្រព័ន្ធ ដោយមិនរាប់បញ្ចូលការលក់ដែលត្រូវបានបោះបង់ (Cancelled)។"),
+        ("• View ៣: TotalAmountByOrderNo (ចំណូលលម្អិតតាមវិក្កយបត្រ)៖",
+         "បង្ហាញលេខវិក្កយបត្រ ចំនួនទំនិញ និងតម្លៃសរុបជួរសម្រាប់វិក្កយបត្រនីមួយៗ ដើម្បីងាយស្រួលគ្រប់គ្រងលំហូរហិរញ្ញវត្ថុ។")
+    ]
+    
+    for title, desc in view_points:
+        p_t = tf10.add_paragraph()
+        p_t.text = title
+        p_t.font.name = BODY_FONT
+        p_t.font.size = Pt(13)
+        p_t.font.bold = True
+        p_t.font.color.rgb = DARK_BLUE
+        
+        p_d = tf10.add_paragraph()
+        p_d.text = f"  - {desc}"
+        p_d.font.name = BODY_FONT
+        p_d.font.size = Pt(12)
+        p_d.space_after = Pt(10)
+
+    # -------------------------------------------------------------
+    # SLIDE 11: Conclusion
+    # -------------------------------------------------------------
+    slide11 = add_content_slide(prs, cover_slide, "សន្និដ្ឋានរួម (Conclusion)")
+    
+    content_box11 = slide11.shapes.add_textbox(Inches(0.96), Inches(2.1), Inches(11.4), Inches(4.3))
+    tf11 = content_box11.text_frame
+    tf11.word_wrap = True
+    
+    p_c1 = tf11.paragraphs[0]
+    p_c1.text = "• Database (មូលដ្ឋានទិន្នន័យ) គឺជា គ្រឹះស្ថាន (Foundation) ដ៏រឹងមាំ ដែលរក្សាទុកព័ត៌មាននិងទ្រព្យសម្បត្តិស្នូលរបស់អាជីវកម្ម។"
     p_c1.font.name = BODY_FONT
     p_c1.font.size = Pt(14)
     p_c1.space_after = Pt(12)
 
-    p_c2 = tf9.add_paragraph()
+    p_c2 = tf11.add_paragraph()
     p_c2.text = "• Backend (ប្រព័ន្ធដំណើរការខាងក្រោយ) គឺជា ម៉ាស៊ីន (Engine) ដ៏មានថាមពល ដែលគណនា និងចម្លងទិន្នន័យទៅមក។"
     p_c2.font.name = BODY_FONT
     p_c2.font.size = Pt(14)
     p_c2.space_after = Pt(12)
 
-    p_c3 = tf9.add_paragraph()
+    p_c3 = tf11.add_paragraph()
     p_c3.text = "• Frontend (ចំណុចប្រទាក់ខាងមុខ) គឺជា មុខមាត់ (Interface) ដ៏ស្រស់ស្អាត ដែលជួយឱ្យមនុស្សងាយស្រួលធ្វើការជាមួយប្រព័ន្ធ។"
     p_c3.font.name = BODY_FONT
     p_c3.font.size = Pt(14)
     p_c3.space_after = Pt(20)
 
-    p_c4 = tf9.add_paragraph()
+    p_c4 = tf11.add_paragraph()
     p_c4.text = "ការរួមបញ្ចូលគ្នាយ៉ាងល្អឥតខ្ចោះរវាងសមាសភាគទាំងបីនេះ នឹងបង្កើតបានជាប្រព័ន្ធ MIS មួយដ៏ជោគជ័យ និងមានប្រសិទ្ធភាពខ្ពស់សម្រាប់អាជីវកម្ម។"
     p_c4.font.name = BODY_FONT
     p_c4.font.size = Pt(14.5)
