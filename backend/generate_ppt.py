@@ -7,12 +7,15 @@ from pptx.enum.text import PP_ALIGN
 from pptx.enum.shapes import MSO_SHAPE
 
 def copy_template_shapes(source_slide, target_slide):
-    # Copy shapes at index 0 to 7 (background bars, university name, professor name, triangles, logo)
-    for i in range(8):
-        shape = source_slide.shapes[i]
-        el = shape.element
-        new_el = copy.deepcopy(el)
-        target_slide.shapes._spTree.append(new_el)
+    # Copy background bars, university name, professor name, triangles, and logo picture.
+    # Do NOT copy student names (index 7) or presentation title (index 8).
+    indices_to_copy = [0, 1, 2, 3, 4, 5, 6, 9]
+    for i in indices_to_copy:
+        if i < len(source_slide.shapes):
+            shape = source_slide.shapes[i]
+            el = shape.element
+            new_el = copy.deepcopy(el)
+            target_slide.shapes._spTree.append(new_el)
 
 def add_content_slide(prs, source_slide, title_text):
     # Add a blank slide
