@@ -10,6 +10,7 @@ import {
   updateProduct
 } from "../services/productService";
 import type { Product } from "../types";
+import { EXCHANGE_RATES, getCurrencySymbol } from "../utils/format";
 
 const categories = ["Accessories", "Computers", "Mobile", "Electronics", "Software", "General"];
 
@@ -32,11 +33,15 @@ const emptyProduct: ProductForm = {
 };
 
 function productPayload(product: ProductForm, includeStock: boolean) {
+  const currency = getCurrencySymbol();
+  const rate = EXCHANGE_RATES[currency] || 1.0;
+  const usdPrice = Number(product.price) / rate;
+
   const payload: any = {
     sku: product.sku.trim(),
     name: product.name.trim(),
     category: product.category.trim() || "General",
-    price: Number(product.price),
+    price: usdPrice,
     reorder_level: Number(product.reorder_level)
   };
 
@@ -57,6 +62,10 @@ function Products() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+
+  const currencySymbol = getCurrencySymbol();
+  const isKhmer = currencySymbol === "KHR";
+  const currencySign = isKhmer ? "៛" : currencySymbol === "EUR" ? "€" : "$";
 
   async function loadProducts() {
     setIsLoading(true);
@@ -86,12 +95,16 @@ function Products() {
   }
 
   function startEdit(product: Product) {
+    const currency = getCurrencySymbol();
+    const rate = EXCHANGE_RATES[currency] || 1.0;
+    const convertedPrice = product.price * rate;
+
     setEditingProduct(product);
     setForm({
       sku: product.sku,
       name: product.name,
       category: product.category,
-      price: String(product.price),
+      price: String(convertedPrice),
       stock: String(product.stock),
       reorder_level: String(product.reorder_level)
     });
@@ -135,6 +148,108 @@ function Products() {
 
   return (
     <Layout>
+      <Modal
+        isOpen={showForm}
+        onClose={() => setShowForm(false)}
+        title={editingProduct ? "Edit Product" : "New Product"}
+        subtitle={
+          editingProduct
+            ? "Update product details and pricing."
+            : "Register a new product in the catalog."
+        }
+        variant="small"
+      >
+        <form className="form-compact" onSubmit={handleSubmit}>
+          <div className="field">
+            <label htmlFor="sku">SKU (Stock Keeping Unit)</label>
+            <input
+              id="sku"
+              placeholder="e.g. LAP-PRO-001"
+              value={form.sku}
+              onChange={(event) => setForm({ ...form, sku: event.target.value })}
+              required
+            />
+          </div>
+          <div className="field">
+            <label htmlFor="name">Product Name</label>
+            <input
+              id="name"
+              placeholder="e.g. MacBook Pro 14"
+              value={form.name}
+              onChange={(event) => setForm({ ...form, name: event.target.value })}
+              required
+            />
+          </div>
+          <div className="field">
+            <label htmlFor="category">Category</label>
+            <select
+              id="category"
+              value={form.category}
+              onChange={(event) => setForm({ ...form, category: event.target.value })}
+              required
+            >
+              {categories.map((cat) => (
+                <option key={cat} value={cat}>
+                  {cat}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="field">
+            <label htmlFor="price">Unit Price ({currencySign})</label>
+            <input
+              id="price"
+              type="number"
+              min="0"
+              step={isKhmer ? "1" : "0.01"}
+              placeholder={isKhmer ? "0" : "0.00"}
+              value={form.price}
+              onChange={(event) => setForm({ ...form, price: event.target.value })}
+              required
+            />
+          </div>
+          {!editingProduct && (
+            <div className="field">
+              <label htmlFor="stock">Initial Stock Level</label>
+              <input
+                id="stock"
+                type="number"
+                min="0"
+                placeholder="0"
+                value={form.stock}
+                onChange={(event) => setForm({ ...form, stock: event.target.value })}
+                required
+              />
+            </div>
+          )}
+          <div className="field">
+            <label htmlFor="reorder">Reorder Point</label>
+            <input
+              id="reorder"
+              type="number"
+              min="0"
+              placeholder="10"
+              value={form.reorder_level}
+              onChange={(event) => setForm({ ...form, reorder_level: event.target.value })}
+              required
+            />
+          </div>
+          <div className="form-actions" style={{ marginTop: "8px", justifyContent: "center" }}>
+            <button className="button primary" type="submit" disabled={isSaving} style={{ flex: 1 }}>
+              {isSaving ? "Saving..." : editingProduct ? "Update Product" : "Create Product"}
+            </button>
+            <button
+              className="button"
+              type="button"
+              onClick={() => setShowForm(false)}
+              style={{ flex: 1 }}
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      </Modal>
+
       <section className="page">
         <div className="page-header">
           <div>
@@ -159,111 +274,6 @@ function Products() {
 
         {error && <p className="notice danger">{error}</p>}
         {isLoading && <p className="notice">Loading products...</p>}
-
-        <Modal
-          isOpen={showForm}
-          onClose={() => setShowForm(false)}
-          title={editingProduct ? "Edit Product" : "New Product"}
-          subtitle={
-            editingProduct
-              ? "Update product details and pricing."
-              : "Register a new product in the catalog."
-          }
-          variant="small"
-        >
-          <form
-            onSubmit={handleSubmit}
-            style={{ display: "grid", gridTemplateColumns: "1fr", gap: "16px" }}
-          >
-            <div className="field">
-              <label htmlFor="sku">SKU (Stock Keeping Unit)</label>
-              <input
-                id="sku"
-                placeholder="e.g. LAP-PRO-001"
-                value={form.sku}
-                onChange={(event) => setForm({ ...form, sku: event.target.value })}
-                required
-              />
-            </div>
-            <div className="field">
-              <label htmlFor="name">Product Name</label>
-              <input
-                id="name"
-                placeholder="e.g. MacBook Pro 14"
-                value={form.name}
-                onChange={(event) => setForm({ ...form, name: event.target.value })}
-                required
-              />
-            </div>
-            <div className="field">
-              <label htmlFor="category">Category</label>
-              <select
-                id="category"
-                value={form.category}
-                onChange={(event) => setForm({ ...form, category: event.target.value })}
-                required
-              >
-                {categories.map((cat) => (
-                  <option key={cat} value={cat}>
-                    {cat}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="field">
-              <label htmlFor="price">Unit Price ($)</label>
-              <input
-                id="price"
-                type="number"
-                min="0"
-                step="0.01"
-                placeholder="0.00"
-                value={form.price}
-                onChange={(event) => setForm({ ...form, price: event.target.value })}
-                required
-              />
-            </div>
-            {!editingProduct && (
-              <div className="field">
-                <label htmlFor="stock">Initial Stock Level</label>
-                <input
-                  id="stock"
-                  type="number"
-                  min="0"
-                  placeholder="0"
-                  value={form.stock}
-                  onChange={(event) => setForm({ ...form, stock: event.target.value })}
-                  required
-                />
-              </div>
-            )}
-            <div className="field">
-              <label htmlFor="reorder">Reorder Point</label>
-              <input
-                id="reorder"
-                type="number"
-                min="0"
-                placeholder="10"
-                value={form.reorder_level}
-                onChange={(event) => setForm({ ...form, reorder_level: event.target.value })}
-                required
-              />
-            </div>
-            <div className="form-actions" style={{ marginTop: "8px" }}>
-              <button className="button primary" type="submit" disabled={isSaving} style={{ flex: 1 }}>
-                {isSaving ? "Saving..." : editingProduct ? "Update Product" : "Create Product"}
-              </button>
-              <button
-                className="button"
-                type="button"
-                onClick={() => setShowForm(false)}
-                style={{ flex: 1 }}
-              >
-                Cancel
-              </button>
-            </div>
-          </form>
-        </Modal>
 
         <div className="toolbar">
           <div className="search-wrap">

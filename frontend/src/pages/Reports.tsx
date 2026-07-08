@@ -9,12 +9,7 @@ import Layout from "../components/layout/Layout";
 import MonthlySalesChart from "../components/charts/MonthlySalesChart";
 import TopProductsChart from "../components/charts/TopProductsChart";
 import { getSalesReport } from "../services/reportService";
-
-const money = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  maximumFractionDigits: 0
-});
+import { formatMoney } from "../utils/format";
 
 interface SalesSummary {
   period_days: number;
@@ -123,7 +118,7 @@ function Reports() {
                   <p>Total sales excluding cancelled orders.</p>
                 </div>
                 <span className="status success">
-                  {money.format(report?.summary?.revenue || 0)}
+                  {formatMoney(report?.summary?.revenue || 0)}
                 </span>
               </div>
               <div className="insight-item">
@@ -139,7 +134,7 @@ function Reports() {
                   <p>Revenue divided by orders in the reporting window.</p>
                 </div>
                 <span className="status warning">
-                  {money.format(report?.summary?.average_order_value || 0)}
+                  {formatMoney(report?.summary?.average_order_value || 0)}
                 </span>
               </div>
             </div>

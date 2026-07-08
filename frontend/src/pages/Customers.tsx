@@ -18,6 +18,7 @@ import {
   updateCustomer
 } from "../services/customerService";
 import type { Customer } from "../types";
+import { formatMoney } from "../utils/format";
 
 const segments = ["Active", "VIP", "Wholesale", "Prospect", "Inactive"];
 
@@ -148,6 +149,86 @@ function Customers() {
 
   return (
     <Layout>
+      <Modal
+        isOpen={showForm}
+        onClose={() => setShowForm(false)}
+        title={editingCustomer ? "Edit Customer" : "New Customer"}
+        subtitle={
+          editingCustomer
+            ? "Update contact info and segment."
+            : "Register a new client in your database."
+        }
+        variant="small"
+      >
+        <form className="form-compact" onSubmit={handleSubmit}>
+          <div className="field">
+            <label htmlFor="customer-name">Full Name</label>
+            <input
+              id="customer-name"
+              placeholder="e.g. John Doe"
+              value={form.name}
+              onChange={(event) => setForm({ ...form, name: event.target.value })}
+              required
+            />
+          </div>
+          <div className="field">
+            <label htmlFor="customer-company">Company (Optional)</label>
+            <input
+              id="customer-company"
+              placeholder="e.g. Acme Corp"
+              value={form.company}
+              onChange={(event) => setForm({ ...form, company: event.target.value })}
+            />
+          </div>
+          <div className="field">
+            <label htmlFor="customer-email">Email Address</label>
+            <input
+              id="customer-email"
+              type="email"
+              placeholder="e.g. john@example.com"
+              value={form.email}
+              onChange={(event) => setForm({ ...form, email: event.target.value })}
+              required
+            />
+          </div>
+          <div className="field">
+            <label htmlFor="customer-phone">Phone Number</label>
+            <input
+              id="customer-phone"
+              placeholder="e.g. +1 234 567 890"
+              value={form.phone}
+              onChange={(event) => setForm({ ...form, phone: event.target.value })}
+            />
+          </div>
+          <div className="field">
+            <label htmlFor="customer-segment">Customer Segment</label>
+            <select
+              id="customer-segment"
+              value={form.segment}
+              onChange={(event) => setForm({ ...form, segment: event.target.value })}
+            >
+              {segments.map((seg) => (
+                <option key={seg} value={seg}>
+                  {seg}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="form-actions" style={{ marginTop: "12px", justifyContent: "center" }}>
+            <button className="button primary" type="submit" disabled={isSaving}>
+              {isSaving ? "Saving..." : editingCustomer ? "Update Customer" : "Create Customer"}
+            </button>
+            <button
+              className="button"
+              type="button"
+              onClick={() => setShowForm(false)}
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      </Modal>
+
       <section className="page">
         <div className="page-header">
           <div>
@@ -190,11 +271,7 @@ function Customers() {
           />
           <StatsCard
             title="Avg. Order"
-            value={new Intl.NumberFormat("en-US", {
-              style: "currency",
-              currency: "USD",
-              maximumFractionDigits: 0
-            }).format(stats.averageOrder)}
+            value={formatMoney(stats.averageOrder)}
             detail="all time"
             tone="#b45309"
             Icon={ReceiptText}
@@ -208,85 +285,6 @@ function Customers() {
             Icon={MessageSquareWarning}
           />
         </div>
-
-        <Modal
-          isOpen={showForm}
-          onClose={() => setShowForm(false)}
-          title={editingCustomer ? "Edit Customer" : "New Customer"}
-          subtitle={
-            editingCustomer
-              ? "Update contact info and segment."
-              : "Register a new client in your database."
-          }
-        >
-          <form className="form-grid" onSubmit={handleSubmit}>
-            <div className="field">
-              <label htmlFor="customer-name">Full Name</label>
-              <input
-                id="customer-name"
-                placeholder="e.g. John Doe"
-                value={form.name}
-                onChange={(event) => setForm({ ...form, name: event.target.value })}
-                required
-              />
-            </div>
-            <div className="field">
-              <label htmlFor="customer-company">Company (Optional)</label>
-              <input
-                id="customer-company"
-                placeholder="e.g. Acme Corp"
-                value={form.company}
-                onChange={(event) => setForm({ ...form, company: event.target.value })}
-              />
-            </div>
-            <div className="field">
-              <label htmlFor="customer-email">Email Address</label>
-              <input
-                id="customer-email"
-                type="email"
-                placeholder="e.g. john@example.com"
-                value={form.email}
-                onChange={(event) => setForm({ ...form, email: event.target.value })}
-                required
-              />
-            </div>
-            <div className="field">
-              <label htmlFor="customer-phone">Phone Number</label>
-              <input
-                id="customer-phone"
-                placeholder="e.g. +1 234 567 890"
-                value={form.phone}
-                onChange={(event) => setForm({ ...form, phone: event.target.value })}
-              />
-            </div>
-            <div className="field">
-              <label htmlFor="customer-segment">Customer Segment</label>
-              <select
-                id="customer-segment"
-                value={form.segment}
-                onChange={(event) => setForm({ ...form, segment: event.target.value })}
-              >
-                {segments.map((seg) => (
-                  <option key={seg} value={seg}>
-                    {seg}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="form-actions" style={{ marginTop: "12px" }}>
-              <button className="button primary" type="submit" disabled={isSaving}>
-                {isSaving ? "Saving..." : editingCustomer ? "Update Customer" : "Create Customer"}
-              </button>
-              <button
-                className="button"
-                type="button"
-                onClick={() => setShowForm(false)}
-              >
-                Cancel
-              </button>
-            </div>
-          </form>
-        </Modal>
 
         <div className="toolbar">
           <div className="search-wrap">

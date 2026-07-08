@@ -1,10 +1,5 @@
 import type { Customer } from "../../types";
-
-const money = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  maximumFractionDigits: 0
-});
+import { formatMoney } from "../../utils/format";
 
 interface CustomerTableProps {
   customers?: Customer[];
@@ -51,7 +46,7 @@ function CustomerTable({ customers = [], onEdit }: CustomerTableProps) {
                   <span className="status info">{customer.segment || "Active"}</span>
                 </td>
                 <td className="numeric">{customer.orders || 0}</td>
-                <td className="numeric">{money.format(customer.spend || 0)}</td>
+                <td className="numeric">{formatMoney(customer.spend || 0)}</td>
                 {onEdit && (
                   <td>
                     <button

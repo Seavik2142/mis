@@ -28,6 +28,8 @@ function Register() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [summary, setSummary] = useState<DashboardSummary | null>(null);
 
+  const businessName = localStorage.getItem("setting_business_name") || "MIS Of Me";
+
   useEffect(() => {
     let isMounted = true;
     async function loadStats() {
@@ -110,7 +112,7 @@ function Register() {
                 <BrandLogo />
               </span>
               <div>
-                <p className="brand-title">MIS Of Me</p>
+                <p className="brand-title">{businessName}</p>
               </div>
             </div>
 

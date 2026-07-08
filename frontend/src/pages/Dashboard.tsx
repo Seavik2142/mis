@@ -24,12 +24,7 @@ import {
 import { getLowStockProducts } from "../services/inventoryService";
 import { getOrders } from "../services/orderService";
 import type { DashboardSummary, Product, Order } from "../types";
-
-const money = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  maximumFractionDigits: 0
-});
+import { formatMoney } from "../utils/format";
 
 function downloadJson(filename: string, data: any) {
   const blob = new Blob([JSON.stringify(data, null, 2)], {
@@ -179,7 +174,7 @@ function Dashboard() {
 
           <StatsCard
             title="Inventory"
-            value={money.format(summary?.inventory_value || 0)}
+            value={formatMoney(summary?.inventory_value || 0)}
             detail={`${summary?.low_stock_products || 0} low stock`}
             tone="#b45309"
             trend={summary?.low_stock_products ? "risk" : "stable"}

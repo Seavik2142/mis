@@ -263,8 +263,8 @@ def seed_demo_data() -> None:
 
 def seed_midterm_data() -> None:
     with SessionLocal() as db:
-        # Check if already seeded (by checking if employee with ID 1 exists)
-        if db.scalar(select(Employee.id).limit(1)):
+        # Check if already seeded (by checking if employee or customer exists)
+        if db.scalar(select(Employee.id).limit(1)) or db.scalar(select(Customer.id).limit(1)):
             return
 
         # 1. Seed Employees
@@ -362,31 +362,59 @@ def seed_midterm_data() -> None:
 
 def create_views() -> None:
     with SessionLocal() as db:
-        views = [
-            """
-            CREATE VIEW IF NOT EXISTS NumberClientOrdered AS
-            SELECT c.id as Client_no, c.name as ClientName, c.phone, COUNT(o.id) as NumberOrder
-            FROM customers c
-            JOIN orders o ON c.id = o.customer_id
-            GROUP BY c.id, c.name, c.phone;
-            """,
-            """
-            CREATE VIEW IF NOT EXISTS TotalSaleAmount AS
-            SELECT o.id as Order_No, o.ordered_at as Order_date, o.customer_id as Client_No, c.name as ClientName, p.product_code as Product_no, p.name as ProductName, od.quantity as Qty, od.unit_price as Price, od.line_total as Amount
-            FROM orders o
-            JOIN customers c ON o.customer_id = c.id
-            JOIN order_items od ON o.id = od.order_id
-            JOIN products p ON od.product_id = p.id;
-            """,
-            """
-            CREATE VIEW IF NOT EXISTS TotalAmountByOrderNo AS
-            SELECT o.id as Order_No, o.ordered_at as Order_date, o.customer_id as Client_No, c.name as ClientName, SUM(od.quantity * od.unit_price) as Amount, COUNT(od.product_id) as [Item#]
-            FROM orders o
-            JOIN customers c ON o.customer_id = c.id
-            JOIN order_items od ON o.id = od.order_id
-            GROUP BY o.id, o.ordered_at, o.customer_id, c.name;
-            """
-        ]
+        is_sqlite = db.bind.dialect.name == "sqlite"
+        if is_sqlite:
+            views = [
+                """
+                CREATE VIEW IF NOT EXISTS NumberClientOrdered AS
+                SELECT c.id as Client_no, c.name as ClientName, c.phone, COUNT(o.id) as NumberOrder
+                FROM customers c
+                JOIN orders o ON c.id = o.customer_id
+                GROUP BY c.id, c.name, c.phone;
+                """,
+                """
+                CREATE VIEW IF NOT EXISTS TotalSaleAmount AS
+                SELECT o.id as Order_No, o.ordered_at as Order_date, o.customer_id as Client_No, c.name as ClientName, p.product_code as Product_no, p.name as ProductName, od.quantity as Qty, od.unit_price as Price, od.line_total as Amount
+                FROM orders o
+                JOIN customers c ON o.customer_id = c.id
+                JOIN order_items od ON o.id = od.order_id
+                JOIN products p ON od.product_id = p.id;
+                """,
+                """
+                CREATE VIEW IF NOT EXISTS TotalAmountByOrderNo AS
+                SELECT o.id as Order_No, o.ordered_at as Order_date, o.customer_id as Client_No, c.name as ClientName, SUM(od.quantity * od.unit_price) as Amount, COUNT(od.product_id) as [Item#]
+                FROM orders o
+                JOIN customers c ON o.customer_id = c.id
+                JOIN order_items od ON o.id = od.order_id
+                GROUP BY o.id, o.ordered_at, o.customer_id, c.name;
+                """
+            ]
+        else:
+            views = [
+                """
+                CREATE OR REPLACE VIEW NumberClientOrdered AS
+                SELECT c.id as Client_no, c.name as ClientName, c.phone, COUNT(o.id) as NumberOrder
+                FROM customers c
+                JOIN orders o ON c.id = o.customer_id
+                GROUP BY c.id, c.name, c.phone;
+                """,
+                """
+                CREATE OR REPLACE VIEW TotalSaleAmount AS
+                SELECT o.id as Order_No, o.ordered_at as Order_date, o.customer_id as Client_No, c.name as ClientName, p.product_code as Product_no, p.name as ProductName, od.quantity as Qty, od.unit_price as Price, od.line_total as Amount
+                FROM orders o
+                JOIN customers c ON o.customer_id = c.id
+                JOIN order_items od ON o.id = od.order_id
+                JOIN products p ON od.product_id = p.id;
+                """,
+                """
+                CREATE OR REPLACE VIEW TotalAmountByOrderNo AS
+                SELECT o.id as Order_No, o.ordered_at as Order_date, o.customer_id as Client_No, c.name as ClientName, SUM(od.quantity * od.unit_price) as Amount, COUNT(od.product_id) as "Item#"
+                FROM orders o
+                JOIN customers c ON o.customer_id = c.id
+                JOIN order_items od ON o.id = od.order_id
+                GROUP BY o.id, o.ordered_at, o.customer_id, c.name;
+                """
+            ]
         for view_sql in views:
             try:
                 db.execute(text(view_sql))

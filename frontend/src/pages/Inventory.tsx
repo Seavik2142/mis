@@ -5,7 +5,7 @@ import {
   TriangleAlert,
   Warehouse
 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import Modal from "../components/common/Modal";
 import Layout from "../components/layout/Layout";
 import ProductTable from "../components/tables/ProductTable";
@@ -16,12 +16,7 @@ import {
 } from "../services/inventoryService";
 import { getProducts } from "../services/productService";
 import type { Product, InventoryMovement } from "../types";
-
-const money = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  maximumFractionDigits: 0
-});
+import { formatMoney } from "../utils/format";
 
 interface AdjustmentForm {
   product_id: string;
@@ -44,6 +39,27 @@ function Inventory() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showDropdown, setShowDropdown] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowDropdown(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (adjustment.product_id && !adjustment.quantity) {
+      setAdjustment((prev) => ({ ...prev, quantity: "1" }));
+    }
+  }, [adjustment.product_id]);
 
   async function loadInventory() {
     setIsLoading(true);
@@ -78,6 +94,21 @@ function Inventory() {
     });
   }, [products]);
 
+  const filteredProducts = useMemo(() => {
+    if (!searchQuery.trim()) return products;
+    const query = searchQuery.trim().toLowerCase();
+    return products.filter(
+      (p) =>
+        p.name.toLowerCase().includes(query) ||
+        (p.sku && p.sku.toLowerCase().includes(query)) ||
+        (p.product_code && p.product_code.toLowerCase().includes(query))
+    );
+  }, [products, searchQuery]);
+
+  const selectedProduct = useMemo(() => {
+    return products.find((p) => String(p.id) === adjustment.product_id);
+  }, [products, adjustment.product_id]);
+
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
     setIsSaving(true);
@@ -89,6 +120,7 @@ function Inventory() {
       });
       setAdjustment(emptyAdjustment);
       setShowForm(false);
+      setSearchQuery("");
       await loadInventory();
     } catch (requestError: any) {
       setError(requestError.message);
@@ -99,6 +131,274 @@ function Inventory() {
 
   return (
     <Layout>
+      <Modal
+        isOpen={showForm}
+        onClose={() => {
+          setShowForm(false);
+          setAdjustment(emptyAdjustment);
+          setSearchQuery("");
+        }}
+        title="Receive & Adjust Items"
+        subtitle="Increase or decrease stock levels with live calculations and quick presets."
+        variant="small"
+      >
+        <form className="form-compact" onSubmit={handleSubmit}>
+          <div className="field">
+            <label htmlFor="adjust-product">Select Product</label>
+            
+            {!selectedProduct ? (
+              <div className="autocomplete-container" ref={dropdownRef}>
+                <input
+                  id="adjust-product"
+                  type="text"
+                  placeholder="Search by product name, SKU, or code..."
+                  value={searchQuery}
+                  onFocus={() => setShowDropdown(true)}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  required={!adjustment.product_id}
+                  autoComplete="off"
+                />
+                {showDropdown && (
+                  <div className="autocomplete-dropdown">
+                    {filteredProducts.length > 0 ? (
+                      filteredProducts.map((product) => (
+                        <div
+                          key={product.id}
+                          className="autocomplete-item"
+                          onClick={() => {
+                            setAdjustment({
+                              ...adjustment,
+                              product_id: String(product.id)
+                            });
+                            setShowDropdown(false);
+                            setSearchQuery("");
+                          }}
+                        >
+                          <div>
+                            <div className="autocomplete-item-name">{product.name}</div>
+                            <div style={{ fontSize: "11px", color: "var(--muted)" }}>
+                              SKU: {product.sku || "N/A"} · {product.category || "General"}
+                            </div>
+                          </div>
+                          <span className="autocomplete-item-stock">
+                            Stock: {product.stock}
+                          </span>
+                        </div>
+                      ))
+                    ) : (
+                      <div style={{ padding: "12px", textAlign: "center", color: "var(--muted)" }}>
+                        No matching products found
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="product-preview-card">
+                <div className="preview-info">
+                  <span className="preview-title">{selectedProduct.name}</span>
+                  <div className="preview-meta">
+                    <span>SKU: {selectedProduct.sku || "N/A"}</span>
+                    <span>·</span>
+                    <span>Category: {selectedProduct.category || "General"}</span>
+                  </div>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                  <span className={`preview-stock-badge ${Number(selectedProduct.stock) <= Number(selectedProduct.reorder_level) ? "low" : "good"}`}>
+                    Qty: {selectedProduct.stock}
+                  </span>
+                  <button
+                    type="button"
+                    className="preset-pill"
+                    style={{ margin: 0, padding: "4px 8px" }}
+                    onClick={() => {
+                      setAdjustment({
+                        ...adjustment,
+                        product_id: ""
+                      });
+                    }}
+                  >
+                    Change
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="field">
+            <label htmlFor="adjust-quantity">Quantity Change</label>
+            <div className="qty-control-wrapper">
+              <button
+                type="button"
+                className="qty-step-btn"
+                onClick={() => {
+                  const currentVal = Number(adjustment.quantity) || 0;
+                  setAdjustment({
+                    ...adjustment,
+                    quantity: String(currentVal - 1)
+                  });
+                }}
+                disabled={!selectedProduct}
+              >
+                -1
+              </button>
+              <input
+                id="adjust-quantity"
+                type="number"
+                placeholder="e.g. 50 or -10"
+                value={adjustment.quantity}
+                onChange={(event) => setAdjustment({
+                  ...adjustment,
+                  quantity: event.target.value
+                })}
+                disabled={!selectedProduct}
+                required
+                style={{ textAlign: "center" }}
+              />
+              <button
+                type="button"
+                className="qty-step-btn"
+                onClick={() => {
+                  const currentVal = Number(adjustment.quantity) || 0;
+                  setAdjustment({
+                    ...adjustment,
+                    quantity: String(currentVal + 1)
+                  });
+                }}
+                disabled={!selectedProduct}
+              >
+                +1
+              </button>
+            </div>
+            {selectedProduct && (
+              <div className="preset-container" style={{ justifyContent: "center" }}>
+                <button
+                  type="button"
+                  className="preset-pill"
+                  onClick={() => {
+                    const currentVal = Number(adjustment.quantity) || 0;
+                    setAdjustment({ ...adjustment, quantity: String(currentVal + 10) });
+                  }}
+                >
+                  +10
+                </button>
+                <button
+                  type="button"
+                  className="preset-pill"
+                  onClick={() => {
+                    const currentVal = Number(adjustment.quantity) || 0;
+                    setAdjustment({ ...adjustment, quantity: String(currentVal + 50) });
+                  }}
+                >
+                  +50
+                </button>
+                <button
+                  type="button"
+                  className="preset-pill"
+                  onClick={() => {
+                    const currentVal = Number(adjustment.quantity) || 0;
+                    setAdjustment({ ...adjustment, quantity: String(currentVal - 10) });
+                  }}
+                >
+                  -10
+                </button>
+              </div>
+            )}
+          </div>
+
+          <div className="field">
+            <label htmlFor="adjust-note">Reason / Note</label>
+            <input
+              id="adjust-note"
+              value={adjustment.note}
+              onChange={(event) => setAdjustment({
+                ...adjustment,
+                note: event.target.value
+              })}
+              placeholder="Select preset or write custom note..."
+              disabled={!selectedProduct}
+            />
+            {selectedProduct && (
+              <div className="preset-container">
+                <button
+                  type="button"
+                  className="preset-pill"
+                  onClick={() => setAdjustment({
+                    ...adjustment,
+                    note: "Restock Shipment Received",
+                    quantity: adjustment.quantity || "10"
+                  })}
+                >
+                  Restock
+                </button>
+                <button
+                  type="button"
+                  className="preset-pill"
+                  onClick={() => setAdjustment({
+                    ...adjustment,
+                    note: "Customer Return to Stock",
+                    quantity: adjustment.quantity || "1"
+                  })}
+                >
+                  Return
+                </button>
+                <button
+                  type="button"
+                  className="preset-pill"
+                  onClick={() => setAdjustment({
+                    ...adjustment,
+                    note: "Damaged / Disposed Item",
+                    quantity: "-1"
+                  })}
+                >
+                  Damaged
+                </button>
+                <button
+                  type="button"
+                  className="preset-pill"
+                  onClick={() => setAdjustment({
+                    ...adjustment,
+                    note: "Audit Stock Count Adjustment"
+                  })}
+                >
+                  Audit
+                </button>
+              </div>
+            )}
+          </div>
+
+          {selectedProduct && adjustment.quantity && Number(adjustment.quantity) !== 0 && (
+            <div className="stock-calculator-preview">
+              <span>Calculated Stock:</span>
+              <div className="calc-step">
+                <span className="calc-val">{selectedProduct.stock}</span>
+                <span className="calc-arrow">→</span>
+                <span className="calc-val primary">
+                  {Number(selectedProduct.stock) + Number(adjustment.quantity)}
+                </span>
+              </div>
+            </div>
+          )}
+
+          <div className="form-actions" style={{ marginTop: "16px", paddingTop: "12px", borderTop: "1px solid var(--border)", justifyContent: "center" }}>
+            <button className="button primary" type="submit" disabled={isSaving || !selectedProduct || !adjustment.quantity}>
+              {isSaving ? "Saving..." : "Apply Adjustment"}
+            </button>
+            <button
+              className="button"
+              type="button"
+              onClick={() => {
+                setShowForm(false);
+                setAdjustment(emptyAdjustment);
+                setSearchQuery("");
+              }}
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      </Modal>
+
       <section className="page">
         <div className="page-header">
           <div>
@@ -128,73 +428,6 @@ function Inventory() {
         {error && <p className="notice danger">{error}</p>}
         {isLoading && <p className="notice">Loading inventory...</p>}
 
-        <Modal
-          isOpen={showForm}
-          onClose={() => setShowForm(false)}
-          title="Stock Adjustment"
-          subtitle="Manually increase or decrease stock levels for a specific product."
-        >
-          <form className="form-grid" onSubmit={handleSubmit}>
-            <div className="field span-2">
-              <label htmlFor="adjust-product">Select Product</label>
-              <select
-                id="adjust-product"
-                value={adjustment.product_id}
-                onChange={(event) => setAdjustment({
-                  ...adjustment,
-                  product_id: event.target.value
-                })}
-                required
-              >
-                <option value="">Search or select product...</option>
-                {products.map((product) => (
-                  <option key={product.id} value={product.id}>
-                    {product.name} — Current stock: {product.stock}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="field">
-              <label htmlFor="adjust-quantity">Quantity Change</label>
-              <input
-                id="adjust-quantity"
-                type="number"
-                placeholder="e.g. 50 or -10"
-                value={adjustment.quantity}
-                onChange={(event) => setAdjustment({
-                  ...adjustment,
-                  quantity: event.target.value
-                })}
-                required
-              />
-            </div>
-            <div className="field">
-              <label htmlFor="adjust-note">Reason / Note</label>
-              <input
-                id="adjust-note"
-                value={adjustment.note}
-                onChange={(event) => setAdjustment({
-                  ...adjustment,
-                  note: event.target.value
-                })}
-                placeholder="Shipment received, damage, etc."
-              />
-            </div>
-            <div className="form-actions" style={{ marginTop: "12px" }}>
-              <button className="button primary" type="submit" disabled={isSaving}>
-                {isSaving ? "Saving..." : "Apply Adjustment"}
-              </button>
-              <button
-                className="button"
-                type="button"
-                onClick={() => setShowForm(false)}
-              >
-                Cancel
-              </button>
-            </div>
-          </form>
-        </Modal>
-
         <div className="dashboard-grid">
           <section className="panel">
             <div className="panel-header">
@@ -222,7 +455,7 @@ function Inventory() {
                   <strong>Inventory Value</strong>
                   <p>Stock multiplied by current price</p>
                 </div>
-                <span className="metric-value">{money.format(inventoryStats.value)}</span>
+                <span className="metric-value">{formatMoney(inventoryStats.value)}</span>
               </div>
               <div className="metric-row">
                 <div>

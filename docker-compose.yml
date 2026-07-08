@@ -2,7 +2,7 @@ services:
   postgres:
     image: postgres:16-alpine
     environment:
-      POSTGRES_DB: salesmis
+      POSTGRES_DB: sales_mis
       POSTGRES_USER: salesmis
       POSTGRES_PASSWORD: salesmis
     ports:
@@ -10,7 +10,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U salesmis -d salesmis"]
+      test: ["CMD-SHELL", "pg_isready -U salesmis -d sales_mis"]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -19,7 +19,7 @@ services:
     build:
       context: ./backend
     environment:
-      DATABASE_URL: postgresql+psycopg://salesmis:salesmis@postgres:5432/salesmis
+      DATABASE_URL: postgresql+psycopg://salesmis:salesmis@postgres:5432/sales_mis
       JWT_SECRET_KEY: local-development-secret-change-before-production
       INITIAL_ADMIN_EMAIL: ahzarky@gmail.com
       INITIAL_ADMIN_PASSWORD: 123456

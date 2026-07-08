@@ -1,5 +1,4 @@
 import {
-  BarChart3,
   Boxes,
   FileBarChart,
   LayoutDashboard,
@@ -9,6 +8,7 @@ import {
   UsersRound
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import BrandLogo from "../common/BrandLogo";
 
@@ -29,6 +29,20 @@ const links: LinkItem[] = [
 ];
 
 function Sidebar() {
+  const [businessName, setBusinessName] = useState(() => {
+    return localStorage.getItem("setting_business_name") || "MIS Of Me";
+  });
+
+  useEffect(() => {
+    const handleSettingsUpdate = () => {
+      setBusinessName(localStorage.getItem("setting_business_name") || "MIS Of Me");
+    };
+    window.addEventListener("settings_updated", handleSettingsUpdate);
+    return () => {
+      window.removeEventListener("settings_updated", handleSettingsUpdate);
+    };
+  }, []);
+
   return (
     <aside className="sidebar">
       <div className="brand">
@@ -36,7 +50,7 @@ function Sidebar() {
           <BrandLogo />
         </span>
         <div>
-          <p className="brand-title">MIS Of Me</p>
+          <p className="brand-title">{businessName}</p>
         </div>
       </div>
 

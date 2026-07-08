@@ -1,10 +1,5 @@
 import type { Product } from "../../types";
-
-const money = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  maximumFractionDigits: 0
-});
+import { formatMoney } from "../../utils/format";
 
 function getStockStatus(product: Product & { status?: string }) {
   if (product.status) {
@@ -40,18 +35,22 @@ interface ProductTableProps {
   onArchive?: (product: Product) => void;
 }
 
-function ProductTable({ products = [], onEdit, onArchive }: ProductTableProps) {
+function ProductTable({
+  products = [],
+  onEdit,
+  onArchive
+}: ProductTableProps) {
   return (
     <div className="table-card">
       <div className="table-scroll">
         <table className="data-table">
           <thead>
             <tr>
-              <th>SKU</th>
+              <th>ID</th>
               <th>Product</th>
               <th>Category</th>
               <th>Price</th>
-              <th>Stock</th>
+              <th>Stock Level</th>
               <th>Status</th>
               {(onEdit || onArchive) && <th>Actions</th>}
             </tr>
@@ -68,7 +67,8 @@ function ProductTable({ products = [], onEdit, onArchive }: ProductTableProps) {
 
             {products.map((product) => {
               const status = getStockStatus(product);
-              const stockPercent = Math.min(100, Math.max(8, product.stock));
+              const maxStock = 120;
+              const stockPercent = Math.min((product.stock / maxStock) * 100, 100);
 
               return (
                 <tr key={product.id}>
@@ -76,11 +76,11 @@ function ProductTable({ products = [], onEdit, onArchive }: ProductTableProps) {
                   <td>
                     <span className="entity">
                       <strong>{product.name}</strong>
-                      <span>{product.sku || "Core catalog item"}</span>
+                      <span>SKU: {product.sku || "N/A"}</span>
                     </span>
                   </td>
                   <td>{product.category || "General"}</td>
-                  <td className="numeric">{money.format(product.price)}</td>
+                  <td className="numeric">{formatMoney(product.price, 2)}</td>
                   <td>
                     <span className="entity">
                       <strong>{product.stock} units</strong>

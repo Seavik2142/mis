@@ -50,6 +50,45 @@ function Settings() {
     localStorage.setItem("setting_delayed_alerts", String(val));
   };
 
+  const [businessName, setBusinessName] = useState(() => {
+    return localStorage.getItem("setting_business_name") || "MIS Of Me";
+  });
+
+  const [currency, setCurrency] = useState(() => {
+    return localStorage.getItem("setting_currency") || "USD";
+  });
+
+  const [timezone, setTimezone] = useState(() => {
+    return localStorage.getItem("setting_timezone") || "Asia/Phnom_Penh";
+  });
+
+  const [reportEmail, setReportEmail] = useState(() => {
+    return localStorage.getItem("setting_report_email") || "reports@salesmis.com";
+  });
+
+  const handleSaveProfile = () => {
+    setError("");
+    setSuccess("");
+    try {
+      localStorage.setItem("setting_business_name", businessName);
+      localStorage.setItem("setting_currency", currency);
+      localStorage.setItem("setting_timezone", timezone);
+      localStorage.setItem("setting_report_email", reportEmail);
+      window.dispatchEvent(new Event("settings_updated"));
+      setSuccess("Profile settings updated successfully!");
+    } catch (e: any) {
+      setError("Failed to save profile settings.");
+    }
+  };
+
+  const handleResetProfile = () => {
+    setBusinessName(localStorage.getItem("setting_business_name") || "MIS Of Me");
+    setCurrency(localStorage.getItem("setting_currency") || "USD");
+    setTimezone(localStorage.getItem("setting_timezone") || "Asia/Phnom_Penh");
+    setReportEmail(localStorage.getItem("setting_report_email") || "reports@salesmis.com");
+    setSuccess("Settings reset to last saved state.");
+  };
+
 
   // Secure Password strength validator
   const validatePassword = (pass: string): string | null => {
@@ -109,16 +148,23 @@ function Settings() {
           </div>
 
           <div className="actions">
-            <button className="button" type="button">
+            <button className="button" type="button" onClick={handleResetProfile}>
               <RotateCcw aria-hidden="true" size={17} strokeWidth={2.2} />
               Reset
             </button>
-            <button className="button primary" type="button">
+            <button className="button primary" type="button" onClick={handleSaveProfile}>
               <Save aria-hidden="true" size={17} strokeWidth={2.2} />
               Save Changes
             </button>
           </div>
         </div>
+
+        {error && !oldPassword && (
+          <p className="notice danger" style={{ margin: "0 0 20px 0" }}>{error}</p>
+        )}
+        {success && !oldPassword && (
+          <p className="notice success" style={{ margin: "0 0 20px 0" }}>{success}</p>
+        )}
 
         <section className="panel">
           <div className="panel-header">
@@ -133,14 +179,22 @@ function Settings() {
             </div>
           </div>
 
-          <div className="form-grid">
+          <div className="form-grid" style={{ padding: "24px" }}>
             <div className="field">
               <label htmlFor="businessName">Business name</label>
-              <input id="businessName" defaultValue="MIS Of Me" />
+              <input
+                id="businessName"
+                value={businessName}
+                onChange={(e) => setBusinessName(e.target.value)}
+              />
             </div>
             <div className="field">
               <label htmlFor="currency">Currency</label>
-              <select id="currency" defaultValue="USD">
+              <select
+                id="currency"
+                value={currency}
+                onChange={(e) => setCurrency(e.target.value)}
+              >
                 <option value="USD">USD</option>
                 <option value="KHR">KHR</option>
                 <option value="EUR">EUR</option>
@@ -148,11 +202,19 @@ function Settings() {
             </div>
             <div className="field">
               <label htmlFor="timezone">Timezone</label>
-              <input id="timezone" defaultValue="Asia/Phnom_Penh" />
+              <input
+                id="timezone"
+                value={timezone}
+                onChange={(e) => setTimezone(e.target.value)}
+              />
             </div>
             <div className="field">
               <label htmlFor="reportEmail">Report email</label>
-              <input id="reportEmail" defaultValue="reports@salesmis.com" />
+              <input
+                id="reportEmail"
+                value={reportEmail}
+                onChange={(e) => setReportEmail(e.target.value)}
+              />
             </div>
           </div>
         </section>

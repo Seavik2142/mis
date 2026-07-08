@@ -28,6 +28,8 @@ function Login() {
   const navigate = useNavigate();
   const { login } = useAuth();
 
+  const businessName = localStorage.getItem("setting_business_name") || "MIS Of Me";
+
   useEffect(() => {
     let isMounted = true;
     async function loadStats() {
@@ -72,7 +74,7 @@ function Login() {
                 <BrandLogo />
               </span>
               <div>
-                <p className="brand-title">MIS Of Me</p>
+                <p className="brand-title">{businessName}</p>
               </div>
             </div>
 
@@ -105,7 +107,7 @@ function Login() {
           <div>
             <p className="eyebrow">Welcome back</p>
             <h2>Log in</h2>
-            <p>Sign in with your MIS Of Me account.</p>
+            <p>Sign in with your {businessName} account.</p>
           </div>
 
           <div className="field">

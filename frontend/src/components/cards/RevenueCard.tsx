@@ -1,4 +1,5 @@
 import { CircleDollarSign } from "lucide-react";
+import { formatMoney } from "../../utils/format";
 
 interface RevenueCardProps {
   revenue: number;
@@ -6,11 +7,7 @@ interface RevenueCardProps {
 }
 
 function RevenueCard({ revenue, fulfilledCount }: RevenueCardProps) {
-  const formattedRevenue = new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    maximumFractionDigits: 0
-  }).format(revenue);
+  const formattedRevenue = formatMoney(revenue);
 
   return (
     <article className="stat-card" style={{ "--stat-tone": "#0f766e" } as React.CSSProperties}>

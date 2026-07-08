@@ -154,6 +154,113 @@ function Orders() {
 
   return (
     <Layout>
+      <Modal
+        isOpen={showForm}
+        onClose={() => setShowForm(false)}
+        title="Create New Order"
+        subtitle="Orders reserve stock immediately and update inventory movements."
+        variant="large"
+      >
+        <form className="order-form" onSubmit={handleSubmit}>
+          <div className="form-grid">
+            <div className="field">
+              <label htmlFor="order-customer">Customer Account</label>
+              <select
+                id="order-customer"
+                value={form.customer_id}
+                onChange={(event) => setForm({ ...form, customer_id: event.target.value })}
+                required
+              >
+                <option value="">Select a customer...</option>
+                {customers.map((customer) => (
+                  <option key={customer.id} value={customer.id}>
+                    {customer.name} {customer.company ? `(${customer.company})` : ""}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="field">
+              <label htmlFor="order-channel">Sales Channel</label>
+              <select
+                id="order-channel"
+                value={form.channel}
+                onChange={(event) => setForm({ ...form, channel: event.target.value })}
+              >
+                <option>Online Store</option>
+                <option>Retail Desk</option>
+                <option>Wholesale</option>
+                <option>Direct Sales</option>
+              </select>
+            </div>
+          </div>
+
+          <div style={{ marginTop: "24px" }}>
+            <h3 style={{ marginBottom: "12px", fontSize: "14px" }}>Order Line Items</h3>
+            <div className="line-items">
+              {form.items.map((item, index) => (
+                <div className="line-item" key={`${index}-${item.product_id}`}>
+                  <div className="field">
+                    <label htmlFor={`product-${index}`}>Product</label>
+                    <select
+                      id={`product-${index}`}
+                      value={item.product_id}
+                      onChange={(event) => updateItem(index, "product_id", event.target.value)}
+                      required
+                    >
+                      <option value="">Choose product...</option>
+                      {products.map((product) => (
+                        <option key={product.id} value={product.id}>
+                          {product.name} — {product.stock} in stock
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="field">
+                    <label htmlFor={`quantity-${index}`}>Qty</label>
+                    <input
+                      id={`quantity-${index}`}
+                      type="number"
+                      min="1"
+                      value={item.quantity}
+                      onChange={(event) => updateItem(index, "quantity", event.target.value)}
+                      required
+                    />
+                  </div>
+                  <button
+                    className="icon-button danger"
+                    type="button"
+                    aria-label="Remove item"
+                    onClick={() => removeItem(index)}
+                    disabled={form.items.length === 1}
+                  >
+                    <Trash2 aria-hidden="true" size={17} strokeWidth={2.2} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="form-actions split" style={{ marginTop: "24px" }}>
+            <button className="button" type="button" onClick={addItem}>
+              <Plus aria-hidden="true" size={17} strokeWidth={2.2} />
+              Add Another Item
+            </button>
+            <div className="actions">
+              <button className="button primary" type="submit" disabled={isSaving}>
+                {isSaving ? "Creating..." : "Place Order"}
+              </button>
+              <button
+                className="button"
+                type="button"
+                onClick={() => setShowForm(false)}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </form>
+      </Modal>
+
       <section className="page">
         <div className="page-header">
           <div>
@@ -215,113 +322,6 @@ function Orders() {
             Icon={TriangleAlert}
           />
         </div>
-
-        <Modal
-          isOpen={showForm}
-          onClose={() => setShowForm(false)}
-          title="Create New Order"
-          subtitle="Orders reserve stock immediately and update inventory movements."
-          variant="large"
-        >
-          <form className="order-form" onSubmit={handleSubmit}>
-            <div className="form-grid">
-              <div className="field">
-                <label htmlFor="order-customer">Customer Account</label>
-                <select
-                  id="order-customer"
-                  value={form.customer_id}
-                  onChange={(event) => setForm({ ...form, customer_id: event.target.value })}
-                  required
-                >
-                  <option value="">Select a customer...</option>
-                  {customers.map((customer) => (
-                    <option key={customer.id} value={customer.id}>
-                      {customer.name} {customer.company ? `(${customer.company})` : ""}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="field">
-                <label htmlFor="order-channel">Sales Channel</label>
-                <select
-                  id="order-channel"
-                  value={form.channel}
-                  onChange={(event) => setForm({ ...form, channel: event.target.value })}
-                >
-                  <option>Online Store</option>
-                  <option>Retail Desk</option>
-                  <option>Wholesale</option>
-                  <option>Direct Sales</option>
-                </select>
-              </div>
-            </div>
-
-            <div style={{ marginTop: "24px" }}>
-              <h3 style={{ marginBottom: "12px", fontSize: "14px" }}>Order Line Items</h3>
-              <div className="line-items">
-                {form.items.map((item, index) => (
-                  <div className="line-item" key={`${index}-${item.product_id}`}>
-                    <div className="field">
-                      <label htmlFor={`product-${index}`}>Product</label>
-                      <select
-                        id={`product-${index}`}
-                        value={item.product_id}
-                        onChange={(event) => updateItem(index, "product_id", event.target.value)}
-                        required
-                      >
-                        <option value="">Choose product...</option>
-                        {products.map((product) => (
-                          <option key={product.id} value={product.id}>
-                            {product.name} — {product.stock} in stock
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                    <div className="field">
-                      <label htmlFor={`quantity-${index}`}>Qty</label>
-                      <input
-                        id={`quantity-${index}`}
-                        type="number"
-                        min="1"
-                        value={item.quantity}
-                        onChange={(event) => updateItem(index, "quantity", event.target.value)}
-                        required
-                      />
-                    </div>
-                    <button
-                      className="icon-button danger"
-                      type="button"
-                      aria-label="Remove item"
-                      onClick={() => removeItem(index)}
-                      disabled={form.items.length === 1}
-                    >
-                      <Trash2 aria-hidden="true" size={17} strokeWidth={2.2} />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="form-actions split" style={{ marginTop: "24px" }}>
-              <button className="button" type="button" onClick={addItem}>
-                <Plus aria-hidden="true" size={17} strokeWidth={2.2} />
-                Add Another Item
-              </button>
-              <div className="actions">
-                <button className="button primary" type="submit" disabled={isSaving}>
-                  {isSaving ? "Creating..." : "Place Order"}
-                </button>
-                <button
-                  className="button"
-                  type="button"
-                  onClick={() => setShowForm(false)}
-                >
-                  Cancel
-                </button>
-              </div>
-            </div>
-          </form>
-        </Modal>
 
         <OrderTable orders={orders} onStatusChange={handleStatusChange} />
       </section>

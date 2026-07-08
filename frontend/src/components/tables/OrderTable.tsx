@@ -1,10 +1,5 @@
 import type { Order } from "../../types";
-
-const money = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  maximumFractionDigits: 0
-});
+import { formatMoney } from "../../utils/format";
 
 function orderStatusClass(status: string) {
   if (status === "Delayed" || status === "Issue") {
@@ -54,12 +49,12 @@ function OrderTable({ orders = [], onStatusChange }: OrderTableProps) {
         <table className="data-table">
           <thead>
             <tr>
-              <th>Order</th>
+              <th>ID</th>
               <th>Customer</th>
               <th>Date</th>
-              <th>Total</th>
+              <th>Amount</th>
               <th>Status</th>
-              {onStatusChange && <th>Update</th>}
+              {onStatusChange && <th>Actions</th>}
             </tr>
           </thead>
 
@@ -87,7 +82,7 @@ function OrderTable({ orders = [], onStatusChange }: OrderTableProps) {
                     </span>
                   </td>
                   <td>{formatDate(order.ordered_at)}</td>
-                  <td className="numeric">{money.format(order.total || 0)}</td>
+                  <td className="numeric">{formatMoney(order.total || 0)}</td>
                   <td>
                     <span className={orderStatusClass(order.status)}>
                       {order.status}

@@ -65,11 +65,25 @@ function Navbar() {
     localStorage.setItem("theme", theme);
   }, [theme]);
 
+  const [businessName, setBusinessName] = useState(() => {
+    return localStorage.getItem("setting_business_name") || "MIS Of Me";
+  });
+
+  useEffect(() => {
+    const handleSettingsUpdate = () => {
+      setBusinessName(localStorage.getItem("setting_business_name") || "MIS Of Me");
+    };
+    window.addEventListener("settings_updated", handleSettingsUpdate);
+    return () => {
+      window.removeEventListener("settings_updated", handleSettingsUpdate);
+    };
+  }, []);
+
   const toggleTheme = () => {
     setTheme((prev) => (prev === "light" ? "dark" : "light"));
   };
 
-  const title = titles[location.pathname] || "MIS Of Me";
+  const title = titles[location.pathname] || businessName;
   const initial = user?.email?.charAt(0)?.toUpperCase() || "A";
 
   async function fetchNotifications() {
